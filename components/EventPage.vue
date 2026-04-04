@@ -9,12 +9,12 @@ type Props = {
 const { event, globalParticipants } = defineProps<Props>();
 
 const busParticipants = computed<BusParticipant[]>(() =>
-  event.participants.map((ep) => {
-    const global = globalParticipants.find((gp) => gp.id === ep.id);
+  event.participants.map((id) => {
+    const global = globalParticipants.find((gp) => gp.id === id);
     return {
-      id: ep.id,
-      avatar: global?.avatar ?? `/avatars/${ep.id}.png`,
-      quote: ep.quote,
+      id,
+      avatar: global?.avatar ?? `/avatars/${id}.png`,
+      quote: global?.quote ?? '',
     };
   })
 );

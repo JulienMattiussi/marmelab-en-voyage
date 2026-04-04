@@ -10,89 +10,9 @@
     "goal": "/assets/goal.png"
   },
   "participants": [
-    {
-      "id": "adrieng",
-      "quote": "Metz ça aurait été mieux."
-    },
-    {
-      "id": "alexandra",
-      "quote": "On peut y aller en stop ?"
-    },
-    {
-      "id": "anthony",
-      "quote": "Je veux aller faire pipi !!"
-    },
-    {
-      "id": "antoine",
-      "quote": "Quelqu'un a vu mon renard ?"
-    },
-    {
-      "id": "arnaud",
-      "quote": "Y a Antoine qui m'embête."
-    },
-    {
-      "id": "benoit",
-      "quote": "Vous êtes sûr qu'on va dans le bon sens ?"
-    },
-    {
-      "id": "caroline",
-      "quote": "zu Hilfe !!"
-    },
-    {
-      "id": "cindy",
-      "quote": "Je vais tous les doubler"
-    },
-    {
-      "id": "erwan",
-      "quote": "Ils ont des murs d'escalade ?"
-    },
-    {
-      "id": "francois",
-      "quote": "Un peu de calme derrière"
-    },
-    {
-      "id": "gildas",
-      "quote": "J'ai des crampes."
-    },
-    {
-      "id": "guillaume",
-      "quote": "C'est trop long."
-    },
-    {
-      "id": "guiom",
-      "quote": "Vimenquonrive"
-    },
-    {
-      "id": "jeremie",
-      "quote": "Pour une fois que je viens ..."
-    },
-    {
-      "id": "jibe",
-      "quote": "On va où ?"
-    },
-    {
-      "id": "jonathan",
-      "quote": "Youpi"
-    },
-    {
-      "id": "julio",
-      "quote": "Quelqu'un a de quoi manger ?"
-    },
-    {
-      "id": "karen",
-      "quote": "J'ai trop trop trop hâte <3 !!"
-    },
-    {
-      "id": "julienmaire",
-      "quote": "zzzzzz"
-    },
-    {
-      "id": "thibault",
-      "quote": "Y aura qui ?"
-    },
-    {
-      "id": "matthieu",
-      "quote": "Mais qu'est-ce-que je fait là"
-    }
+    "adrieng", "alexandra", "anthony", "antoine", "arnaud",
+    "benoit", "caroline", "cindy", "erwan", "francois",
+    "gildas", "guillaume", "guiom", "jeremie", "jibe",
+    "jonathan", "julio", "karen", "julienmaire", "thibault", "matthieu"
   ]
 }

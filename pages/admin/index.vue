@@ -13,6 +13,7 @@ const sorted = computed(() =>
     <div class="header">
       <NuxtLink to="/" class="back-link">← Retour</NuxtLink>
       <h1>Événements</h1>
+      <NuxtLink to="/admin/participants" class="btn-secondary">Participants</NuxtLink>
       <NuxtLink to="/admin/new" class="btn-primary">+ Nouvel événement</NuxtLink>
     </div>
 
@@ -96,6 +97,19 @@ const sorted = computed(() =>
 
 .btn-primary:hover {
   background: #1a252f;
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #2c3e50;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
 }
 
 .empty {

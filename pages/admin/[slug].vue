@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Event, GlobalParticipant, EventParticipant } from '~/types/event';
+import type { Event, GlobalParticipant } from '~/types/event';
 
 const route = useRoute();
 const router = useRouter();
@@ -46,23 +46,15 @@ watch(
 );
 
 // Participant selection helpers
-const isSelected = (id: string) => form.participants.some((p) => p.id === id);
+const isSelected = (id: string) => form.participants.includes(id);
 
 const toggleParticipant = (id: string) => {
-  const idx = form.participants.findIndex((p) => p.id === id);
+  const idx = form.participants.indexOf(id);
   if (idx >= 0) {
     form.participants.splice(idx, 1);
   } else {
-    form.participants.push({ id, quote: '' });
+    form.participants.push(id);
   }
-};
-
-const getQuote = (id: string) =>
-  form.participants.find((p) => p.id === id)?.quote ?? '';
-
-const setQuote = (id: string, quote: string) => {
-  const p = form.participants.find((ep) => ep.id === id);
-  if (p) p.quote = quote;
 };
 
 // Save
@@ -207,10 +199,13 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
 
       <!-- Participants -->
       <section class="card">
-        <h2>Participants <small>({{ form.participants.length }} sélectionnés)</small></h2>
+        <h2>
+          Participants <small>({{ form.participants.length }} sélectionnés)</small>
+          <NuxtLink to="/admin/participants" class="manage-link">Gérer les participants ↗</NuxtLink>
+        </h2>
         <div class="participants-grid">
           <div
-            v-for="gp in globalParticipants"
+            v-for="gp in (globalParticipants ?? []).filter(p => p.active)"
             :key="gp.id"
             :class="['participant-card', { selected: isSelected(gp.id) }]"
           >
@@ -219,14 +214,7 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
               <span class="participant-name">{{ gp.name }}</span>
               <span class="participant-check">{{ isSelected(gp.id) ? '✓' : '+' }}</span>
             </div>
-            <input
-              v-if="isSelected(gp.id)"
-              type="text"
-              class="quote-input"
-              placeholder="Citation…"
-              :value="getQuote(gp.id)"
-              @input="(e) => setQuote(gp.id, (e.target as HTMLInputElement).value)"
-            />
+            <p v-if="isSelected(gp.id)" class="participant-quote">{{ gp.quote }}</p>
           </div>
         </div>
       </section>
@@ -336,6 +324,18 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
   font-weight: normal;
   color: #888;
   font-size: 0.85rem;
+}
+
+.manage-link {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: #888;
+  text-decoration: none;
+}
+
+.manage-link:hover {
+  color: #2c3e50;
 }
 
 .fields {
@@ -462,21 +462,14 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
   color: #2c3e50;
 }
 
-.quote-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px 10px;
-  border: none;
+.participant-quote {
+  margin: 0;
+  padding: 6px 10px;
   border-top: 1px solid #e0e0e0;
-  font-size: 0.8rem;
-  font-family: inherit;
-  color: #2c3e50;
+  font-size: 0.78rem;
+  color: #666;
+  font-style: italic;
   background: white;
-}
-
-.quote-input:focus {
-  outline: none;
-  background: #f9f9f9;
 }
 
 .toggle-field {

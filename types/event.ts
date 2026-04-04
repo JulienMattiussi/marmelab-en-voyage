@@ -2,11 +2,8 @@ export type GlobalParticipant = {
   id: string;
   name: string;
   avatar: string; // e.g. /avatars/adrieng.png
-};
-
-export type EventParticipant = {
-  id: string;
   quote: string;
+  active: boolean;
 };
 
 export type EventVisuals = {
@@ -22,7 +19,7 @@ export type Event = {
   start: string;    // ISO date string
   deadline: string; // ISO date string
   visuals: EventVisuals;
-  participants: EventParticipant[];
+  participants: string[]; // participant IDs
 };
 
 // Merged type used by BusImage

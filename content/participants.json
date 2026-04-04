@@ -1,23 +1,149 @@
 [
-  { "id": "adrieng", "name": "Adrien G.", "avatar": "/avatars/adrieng.png" },
-  { "id": "alexandra", "name": "Alexandra", "avatar": "/avatars/alexandra.png" },
-  { "id": "anthony", "name": "Anthony", "avatar": "/avatars/anthony.png" },
-  { "id": "antoine", "name": "Antoine", "avatar": "/avatars/antoine.png" },
-  { "id": "arnaud", "name": "Arnaud", "avatar": "/avatars/arnaud.png" },
-  { "id": "benoit", "name": "Benoît", "avatar": "/avatars/benoit.png" },
-  { "id": "caroline", "name": "Caroline", "avatar": "/avatars/caroline.png" },
-  { "id": "cindy", "name": "Cindy", "avatar": "/avatars/cindy.png" },
-  { "id": "erwan", "name": "Erwan", "avatar": "/avatars/erwan.png" },
-  { "id": "francois", "name": "François", "avatar": "/avatars/francois.jpg" },
-  { "id": "gildas", "name": "Gildas", "avatar": "/avatars/gildas.jpg" },
-  { "id": "guillaume", "name": "Guillaume", "avatar": "/avatars/guillaume.png" },
-  { "id": "guiom", "name": "Guiom", "avatar": "/avatars/guiom.png" },
-  { "id": "jeremie", "name": "Jérémie", "avatar": "/avatars/jeremie.jpg" },
-  { "id": "jibe", "name": "Jibe", "avatar": "/avatars/jibe.png" },
-  { "id": "jonathan", "name": "Jonathan", "avatar": "/avatars/jonathan.png" },
-  { "id": "julio", "name": "Julio", "avatar": "/avatars/julio.jpg" },
-  { "id": "karen", "name": "Karen", "avatar": "/avatars/karen.jpg" },
-  { "id": "julienmaire", "name": "Julien M.", "avatar": "/avatars/julienmaire.png" },
-  { "id": "thibault", "name": "Thibault", "avatar": "/avatars/thibault.png" },
-  { "id": "matthieu", "name": "Matthieu", "avatar": "/avatars/matthieu.png" }
+  {
+    "id": "adrieng",
+    "name": "Adrien G.",
+    "avatar": "/avatars/adrieng.png",
+    "quote": "Metz ça aurait été mieux.",
+    "active": true
+  },
+  {
+    "id": "alexandra",
+    "name": "Alexandra",
+    "avatar": "/avatars/alexandra.png",
+    "quote": "On peut y aller en stop ?",
+    "active": true
+  },
+  {
+    "id": "anthony",
+    "name": "Anthony",
+    "avatar": "/avatars/anthony.png",
+    "quote": "Je veux aller faire pipi !!",
+    "active": true
+  },
+  {
+    "id": "antoine",
+    "name": "Antoine",
+    "avatar": "/avatars/antoine.png",
+    "quote": "Quelqu'un a vu mon renard ?",
+    "active": true
+  },
+  {
+    "id": "arnaud",
+    "name": "Arnaud",
+    "avatar": "/avatars/arnaud.png",
+    "quote": "Y a Antoine qui m'embête.",
+    "active": false
+  },
+  {
+    "id": "benoit",
+    "name": "Benoît",
+    "avatar": "/avatars/benoit.png",
+    "quote": "Vous êtes sûr qu'on va dans le bon sens ?",
+    "active": true
+  },
+  {
+    "id": "caroline",
+    "name": "Caroline",
+    "avatar": "/avatars/caroline.png",
+    "quote": "zu Hilfe !!",
+    "active": true
+  },
+  {
+    "id": "cindy",
+    "name": "Cindy",
+    "avatar": "/avatars/cindy.png",
+    "quote": "Je vais tous les doubler",
+    "active": true
+  },
+  {
+    "id": "erwan",
+    "name": "Erwan",
+    "avatar": "/avatars/erwan.png",
+    "quote": "Ils ont des murs d'escalade ?",
+    "active": true
+  },
+  {
+    "id": "francois",
+    "name": "François",
+    "avatar": "/avatars/francois.jpg",
+    "quote": "Un peu de calme derrière",
+    "active": true
+  },
+  {
+    "id": "gildas",
+    "name": "Gildas",
+    "avatar": "/avatars/gildas.jpg",
+    "quote": "J'ai des crampes.",
+    "active": true
+  },
+  {
+    "id": "guillaume",
+    "name": "Guillaume",
+    "avatar": "/avatars/guillaume.png",
+    "quote": "C'est trop long.",
+    "active": true
+  },
+  {
+    "id": "guiom",
+    "name": "Guiom",
+    "avatar": "/avatars/guiom.png",
+    "quote": "Vimenquonrive",
+    "active": true
+  },
+  {
+    "id": "jeremie",
+    "name": "Jérémie",
+    "avatar": "/avatars/jeremie.jpg",
+    "quote": "Pour une fois que je viens ...",
+    "active": true
+  },
+  {
+    "id": "jibe",
+    "name": "Jibe",
+    "avatar": "/avatars/jibe.png",
+    "quote": "On va où ?",
+    "active": true
+  },
+  {
+    "id": "jonathan",
+    "name": "Jonathan",
+    "avatar": "/avatars/jonathan.png",
+    "quote": "Youpi",
+    "active": true
+  },
+  {
+    "id": "julio",
+    "name": "Julio",
+    "avatar": "/avatars/julio.jpg",
+    "quote": "Quelqu'un a de quoi manger ?",
+    "active": true
+  },
+  {
+    "id": "karen",
+    "name": "Karen",
+    "avatar": "/avatars/karen.jpg",
+    "quote": "J'ai trop trop trop hâte <3 !!",
+    "active": true
+  },
+  {
+    "id": "julienmaire",
+    "name": "Julien M.",
+    "avatar": "/avatars/julienmaire.png",
+    "quote": "zzzzzz",
+    "active": false
+  },
+  {
+    "id": "thibault",
+    "name": "Thibault",
+    "avatar": "/avatars/thibault.png",
+    "quote": "Y aura qui ?",
+    "active": true
+  },
+  {
+    "id": "matthieu",
+    "name": "Matthieu",
+    "avatar": "/avatars/matthieu.png",
+    "quote": "Mais qu'est-ce-que je fait là",
+    "active": true
+  }
 ]
