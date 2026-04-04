@@ -36,8 +36,10 @@
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
+  font-family: inherit;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 
 .btn-primary:hover:not(:disabled) { background: #1a252f; }
@@ -50,7 +52,9 @@
   border-radius: 8px;
   text-decoration: none;
   font-size: 0.9rem;
-  display: inline-block;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
 }
 
 .btn-secondary:hover { background: #e0e0e0; }
@@ -62,7 +66,10 @@
   border-radius: 8px;
   text-decoration: none;
   font-size: 0.9rem;
-  display: inline-block;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .btn-preview:hover { background: #e0e0e0; }

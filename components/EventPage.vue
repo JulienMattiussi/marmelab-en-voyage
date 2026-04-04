@@ -7,14 +7,16 @@ const { event, globalParticipants } = defineProps<{
 }>();
 
 const transportParticipants = computed<TransportParticipant[]>(() =>
-  event.participants.map((id) => {
-    const found = globalParticipants.find((p) => p.id === id);
-    return {
-      id,
-      avatar: found?.avatar ?? `/avatars/${id}.png`,
-      quote: found?.quote ?? '',
-    };
-  }),
+  event.participants
+    .filter((id) => globalParticipants.find((p) => p.id === id)?.active !== false)
+    .map((id) => {
+      const found = globalParticipants.find((p) => p.id === id);
+      return {
+        id,
+        avatar: found?.avatar ?? `/avatars/${id}.png`,
+        quote: found?.quote ?? '',
+      };
+    }),
 );
 </script>
 

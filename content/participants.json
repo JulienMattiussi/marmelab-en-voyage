@@ -74,7 +74,7 @@
     "name": "Gildas",
     "avatar": "/avatars/gildas.jpg",
     "quote": "J'ai des crampes.",
-    "active": true
+    "active": false
   },
   {
     "id": "guillaume",

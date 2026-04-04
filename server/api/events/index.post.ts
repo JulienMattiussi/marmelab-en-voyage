@@ -1,4 +1,5 @@
-import { readEvent, writeEvent } from '~/server/utils/events';
+import { readEvent, writeEvent, listEvents } from '~/server/utils/events';
+import { EVENT_LIMIT } from '~/utils/constants';
 import type { TripEvent } from '~/types/event';
 
 export default defineEventHandler(async (event) => {
@@ -10,6 +11,10 @@ export default defineEventHandler(async (event) => {
 
   if (readEvent(body.slug)) {
     throw createError({ statusCode: 409, message: `Event "${body.slug}" already exists` });
+  }
+
+  if (listEvents().length >= EVENT_LIMIT) {
+    throw createError({ statusCode: 403, message: `La limite de ${EVENT_LIMIT} événements est atteinte. Supprimez un événement pour en créer un nouveau.` });
   }
 
   const newEvent: TripEvent = {

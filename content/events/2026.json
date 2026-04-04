@@ -7,30 +7,10 @@
   "deadline": "2026-06-11T12:22",
   "visuals": {
     "background": "",
-    "goal": ""
+    "goal": "/events/2026/goal.jpg"
   },
   "participants": [
-    {
-      "id": "adrieng",
-      "quote": ""
-    },
-    {
-      "id": "alexandra",
-      "quote": ""
-    },
-    {
-      "id": "anthony",
-      "quote": ""
-    },
-    {
-      "id": "antoine",
-      "quote": ""
-    },
     "adrieng",
-    "alexandra",
-    "anthony",
-    "antoine",
-    "erwan",
-    "cindy"
+    "gildas"
   ]
 }

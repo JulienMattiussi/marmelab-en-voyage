@@ -1,11 +1,37 @@
 <script setup lang="ts">
-import type { TripEvent } from '~/types/event';
+import type { TripEvent, GlobalParticipant } from '~/types/event';
 
-const { data: events } = await useFetch<TripEvent[]>('/api/events');
+const { data: events, refresh } = await useFetch<TripEvent[]>('/api/events');
+const { data: participants } = await useFetch<GlobalParticipant[]>('/api/participants');
+
+const activeIds = computed(() => new Set((participants.value ?? []).filter((p) => p.active).map((p) => p.id)));
+
+const activeParticipantCount = (event: TripEvent) =>
+  event.participants.filter((id) => activeIds.value.has(id)).length;
 
 const sorted = computed(() =>
   [...(events.value ?? [])].sort((a, b) => a.name.localeCompare(b.name)),
 );
+
+const atLimit = computed(() => (events.value?.length ?? 0) >= EVENT_LIMIT);
+
+const deleteError = ref('');
+const deleting = ref<string | null>(null);
+
+const deleteEvent = async (slug: string) => {
+  if (!confirm(`Supprimer l'événement "${slug}" ? Cette action est irréversible.`)) return;
+  deleting.value = slug;
+  deleteError.value = '';
+  try {
+    await $fetch(`/api/events/${slug}`, { method: 'DELETE' });
+    await refresh();
+  } catch (e: unknown) {
+    deleteError.value =
+      (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la suppression';
+  } finally {
+    deleting.value = null;
+  }
+};
 </script>
 
 <template>
@@ -14,8 +40,13 @@ const sorted = computed(() =>
       <NuxtLink to="/" class="back-link">← Retour</NuxtLink>
       <h1>Événements</h1>
       <NuxtLink to="/admin/participants" class="btn-secondary">Participants</NuxtLink>
-      <NuxtLink to="/admin/new" class="btn-primary">+ Nouvel événement</NuxtLink>
+      <NuxtLink v-if="!atLimit" to="/admin/new" class="btn-primary">+ Nouvel événement</NuxtLink>
+      <span v-else class="limit-reached" title="Supprimez un événement pour en créer un nouveau">
+        Limite atteinte ({{ EVENT_LIMIT }}/{{ EVENT_LIMIT }})
+      </span>
     </div>
+
+    <div v-if="deleteError" class="alert-error">{{ deleteError }}</div>
 
     <div v-if="sorted.length === 0" class="empty">
       Aucun événement. <NuxtLink to="/admin/new">Créer le premier</NuxtLink>
@@ -41,7 +72,7 @@ const sorted = computed(() =>
             →
             {{ new Date(event.deadline).toLocaleDateString('fr-FR') }}
           </td>
-          <td>{{ event.participants.length }}</td>
+          <td>{{ activeParticipantCount(event) }}</td>
           <td>
             <span :class="['badge', event.published ? 'published' : 'draft']">
               {{ event.published ? 'Publié' : 'Brouillon' }}
@@ -50,6 +81,13 @@ const sorted = computed(() =>
           <td class="col-actions">
             <NuxtLink :to="`/admin/${event.slug}`" class="btn-primary">Éditer</NuxtLink>
             <NuxtLink :to="`/${event.slug}`" target="_blank" class="btn-preview">Aperçu ↗</NuxtLink>
+            <button
+              class="btn-delete"
+              :disabled="deleting === event.slug"
+              @click="deleteEvent(event.slug)"
+            >
+              {{ deleting === event.slug ? '…' : 'Supprimer' }}
+            </button>
           </td>
         </tr>
       </tbody>
@@ -59,6 +97,16 @@ const sorted = computed(() =>
 
 <style scoped>
 .empty { text-align: center; color: #666; padding: 40px; }
+
+.limit-reached {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #fff3e0;
+  color: #e65100;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: default;
+}
 
 .events-table {
   width: 100%;
@@ -89,7 +137,7 @@ const sorted = computed(() =>
 .col-name { font-weight: bold; }
 .col-slug { font-family: monospace; font-size: 0.85rem; color: #666; }
 .col-dates { font-size: 0.9rem; }
-.col-actions { display: flex; gap: 8px; }
+.col-actions { display: flex; gap: 8px; align-items: center; }
 
 .badge {
   display: inline-block;
@@ -101,4 +149,20 @@ const sorted = computed(() =>
 
 .badge.published { background: #e6f4ea; color: #2e7d32; }
 .badge.draft { background: #fff3e0; color: #e65100; }
+
+.btn-delete {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #e53935;
+  background: white;
+  color: #e53935;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-delete:hover:not(:disabled) { background: #fdecea; }
+.btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
