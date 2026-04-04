@@ -243,49 +243,49 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 .header-actions { display: flex; gap: 10px; align-items: center; }
 
 .btn-delete {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid #e53935;
-  background: white;
-  color: #e53935;
-  font-size: 0.9rem;
+  padding: var(--btn-padding);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger);
+  background: var(--color-bg-card);
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
   font-family: inherit;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
 }
 
-.btn-delete:hover:not(:disabled) { background: #fdecea; }
+.btn-delete:hover:not(:disabled) { background: var(--color-danger-light); }
 .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .sections { display: flex; flex-direction: column; gap: 20px; }
 
 .card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card);
 }
 
 .card h2 {
   margin: 0 0 20px;
-  font-size: 1.1rem;
+  font-size: var(--font-size-md);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.card h2 small { font-weight: normal; color: #888; font-size: 0.85rem; }
+.card h2 small { font-weight: normal; color: var(--color-text-subtle); font-size: var(--font-size-sm); }
 
 .manage-link {
   margin-left: auto;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-weight: normal;
-  color: #888;
+  color: var(--color-text-subtle);
   text-decoration: none;
 }
 
-.manage-link:hover { color: #2c3e50; }
+.manage-link:hover { color: var(--color-primary); }
 
 .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
@@ -293,31 +293,31 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 .field.full { grid-column: 1 / -1; }
 
 .field > span { font-size: 0.85rem; font-weight: bold; color: #555; }
-.field > span small { font-weight: normal; color: #999; }
+.field > span small { font-weight: normal; color: var(--color-text-faint); }
 
 .field input[type="text"],
 .field input[type="datetime-local"] {
   padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   font-size: 0.95rem;
   font-family: inherit;
-  color: #2c3e50;
+  color: var(--color-text);
 }
 
-.field input:disabled { background: #f5f5f5; color: #999; }
+.field input:disabled { background: var(--color-bg); color: var(--color-text-faint); }
 
 .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.thumb { height: 50px; width: auto; border-radius: 4px; border: 1px solid #ddd; }
-.uploading { font-size: 0.85rem; color: #666; }
+.thumb { height: 50px; width: auto; border-radius: 4px; border: 1px solid var(--color-border); }
+.uploading { font-size: 0.85rem; color: var(--color-text-muted); }
 
 .info-notice {
-  background: #fff3e0;
-  border: 1px solid #ffe0b2;
-  border-radius: 6px;
+  background: var(--color-warning-light);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 0.85rem;
-  color: #e65100;
+  color: var(--color-warning);
   margin-bottom: 16px;
 }
 
@@ -328,7 +328,7 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 }
 
 .participant-card {
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--color-border);
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -336,24 +336,24 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
   align-items: center;
   gap: 8px;
   padding: 10px;
-  background: #fafafa;
+  background: var(--color-bg-faint);
   transition: border-color 0.15s;
   flex-wrap: wrap;
 }
 
-.participant-card.selected { border-color: #2c3e50; background: #ecf0f1; }
+.participant-card.selected { border-color: var(--color-primary); background: var(--color-primary-light); }
 
 .participant-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
 .participant-name { flex: 1; font-size: 0.85rem; font-weight: bold; }
-.participant-check { font-weight: bold; color: #888; }
-.participant-card.selected .participant-check { color: #2c3e50; }
+.participant-check { font-weight: bold; color: var(--color-text-subtle); }
+.participant-card.selected .participant-check { color: var(--color-primary); }
 
 .participant-quote {
   margin: 0;
   padding: 6px 10px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
   font-size: 0.78rem;
-  color: #666;
+  color: var(--color-text-muted);
   font-style: italic;
   width: 100%;
 }

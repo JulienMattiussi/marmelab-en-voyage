@@ -31,14 +31,14 @@ const hasError = route.query.error === 'oauth';
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: var(--color-bg);
 }
 
 .login-card {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
   padding: 48px 40px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-raised);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,14 +48,14 @@ const hasError = route.query.error === 'oauth';
 
 .logo { height: 48px; width: auto; }
 
-h1 { margin: 0; font-size: 1.4rem; color: #2c3e50; }
+h1 { margin: 0; font-size: 1.4rem; color: var(--color-primary); }
 
 .error {
-  background: #fdecea;
-  color: #c62828;
-  border-radius: 8px;
+  background: var(--color-error-light);
+  color: var(--color-error);
+  border-radius: var(--radius-md);
   padding: 10px 16px;
-  font-size: 0.9rem;
+  font-size: var(--font-size-base);
   text-align: center;
 }
 
@@ -66,10 +66,11 @@ h1 { margin: 0; font-size: 1.4rem; color: #2c3e50; }
   background: #24292e;
   color: white;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: bold;
+  font-family: var(--font-family);
   transition: background 0.15s;
 }
 

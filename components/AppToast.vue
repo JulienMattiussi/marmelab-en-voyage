@@ -30,16 +30,16 @@ const toasts = useState<Toast[]>('app-toasts', () => []);
 
 .toast {
   padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-raised);
   animation: slide-in 0.2s ease-out;
 }
 
-.toast.success { background: #2e7d32; color: white; }
-.toast.error   { background: #c62828; color: white; }
+.toast.success { background: var(--color-success); color: white; }
+.toast.error   { background: var(--color-error); color: white; }
 
 @keyframes slide-in {
   from { opacity: 0; transform: translateY(12px); }

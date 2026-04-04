@@ -64,7 +64,8 @@ GITHUB_ALLOWED_LOGIN=         # your GitHub username (e.g. JulienMattiussi)
 ## Project structure
 
 ```
-assets/css/admin.css      # shared admin styles (imported globally in nuxt.config.ts)
+assets/css/theme.css      # CSS custom properties: colors, fonts, radii, shadows, spacing
+assets/css/admin.css      # shared admin component styles (imported globally in nuxt.config.ts)
 components/
   BeerProgress.vue        # beer progress bar
   EventCountdown.vue      # full countdown section, uses useCountdown composable
@@ -100,6 +101,7 @@ utils/
 
 - **No type collisions**: always check for name conflicts with DOM/global types before naming a type.
 - **No duplicated code**: shared logic lives in `utils/`, shared styles in `assets/css/admin.css`, shared constants in `utils/constants.ts`.
+- **Theme variables**: all colors, fonts, radii, shadows and spacing live in `assets/css/theme.css` as CSS custom properties. Never hardcode these values in component styles — always reference a variable.
 - **`node:fs` via wrapper**: never import `node:fs` directly in server code — use `~/server/utils/fs` so tests can mock it cleanly.
 - **Nuxt auto-imports**: `utils/` and `composables/` are auto-imported by Nuxt; no explicit import needed in `.vue` files or server routes.
 - **No speculative abstractions**: don't add helpers, fallbacks, or features that aren't required.

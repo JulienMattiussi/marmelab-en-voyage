@@ -104,14 +104,14 @@ const deleteEvent = async (slug: string) => {
 </template>
 
 <style scoped>
-.empty { text-align: center; color: #666; padding: 40px; }
+.empty { text-align: center; color: var(--color-text-muted); padding: 40px; }
 
 .limit-reached {
-  padding: 8px 16px;
-  border-radius: 6px;
-  background: #fff3e0;
-  color: #e65100;
-  font-size: 0.9rem;
+  padding: var(--btn-padding);
+  border-radius: var(--radius-sm);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  font-size: var(--font-size-base);
   font-weight: bold;
   cursor: default;
 }
@@ -119,68 +119,68 @@ const deleteEvent = async (slug: string) => {
 .events-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 12px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
 }
 
 .events-table th {
-  background: #f5f5f5;
+  background: var(--color-bg);
   text-align: left;
   padding: 12px 16px;
-  font-size: 0.85rem;
-  color: #666;
-  border-bottom: 1px solid #e0e0e0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .events-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border-light);
   vertical-align: middle;
 }
 
 .events-table tr:last-child td { border-bottom: none; }
 
 .col-name { font-weight: bold; }
-.col-slug { font-family: monospace; font-size: 0.85rem; color: #666; }
-.col-dates { font-size: 0.9rem; }
+.col-slug { font-family: monospace; font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.col-dates { font-size: var(--font-size-base); }
 .col-actions { display: flex; gap: 8px; align-items: center; }
 
 .badge {
   display: inline-block;
   padding: 3px 10px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-weight: bold;
 }
 
-.badge.published { background: #e6f4ea; color: #2e7d32; }
-.badge.draft { background: #fff3e0; color: #e65100; }
+.badge.published { background: var(--color-success-light); color: var(--color-success); }
+.badge.draft { background: var(--color-warning-light); color: var(--color-warning); }
 
 .btn-delete {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #e53935;
-  background: white;
-  color: #e53935;
-  font-size: 0.85rem;
+  padding: var(--btn-padding);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-danger);
+  background: var(--color-bg-card);
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
   cursor: pointer;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
 }
 
-.btn-delete:hover:not(:disabled) { background: #fdecea; }
+.btn-delete:hover:not(:disabled) { background: var(--color-danger-light); }
 .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-logout {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: white;
-  color: #666;
-  font-size: 0.9rem;
+  padding: var(--btn-padding);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
   font-family: inherit;
   cursor: pointer;
   display: inline-flex;
@@ -188,5 +188,5 @@ const deleteEvent = async (slug: string) => {
   margin-left: auto;
 }
 
-.btn-logout:hover { background: #f5f5f5; }
+.btn-logout:hover { background: var(--color-bg); }
 </style>
