@@ -2,7 +2,7 @@ export default defineOAuthGitHubEventHandler({
   async onSuccess(event, { user }) {
     const allowedLogin = process.env.GITHUB_ALLOWED_LOGIN;
 
-    if (!allowedLogin || user.login !== allowedLogin) {
+if (!allowedLogin || user.login !== allowedLogin) {
       throw createError({ statusCode: 403, message: 'Access denied' });
     }
 
