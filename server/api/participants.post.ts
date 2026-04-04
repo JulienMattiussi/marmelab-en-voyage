@@ -1,4 +1,5 @@
 import { readParticipants, writeParticipants } from '~/server/utils/events';
+import { slugify } from '~/utils/slugify';
 import type { GlobalParticipant } from '~/types/event';
 
 export default defineEventHandler(async (event) => {
@@ -8,13 +9,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'name is required' });
   }
 
-  const id = body.name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '')
-    .replace(/(^-|-$)/g, '');
-
+  const id = slugify(body.name, '');
   const participants = readParticipants();
 
   if (participants.some((p) => p.id === id)) {

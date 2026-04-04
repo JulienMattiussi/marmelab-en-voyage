@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Event } from '~/types/event';
+import type { TripEvent } from '~/types/event';
 
-const { data: events } = await useFetch<Event[]>('/api/events');
-
+const { data: events } = await useFetch<TripEvent[]>('/api/events');
 const published = computed(() => (events.value ?? []).filter((e) => e.published));
 </script>
 
@@ -38,27 +37,8 @@ const published = computed(() => (events.value ?? []).filter((e) => e.published)
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  padding-top: 60px;
-}
-
-@media (max-width: 1250px) {
-  #app {
-    padding-top: 10px;
-  }
-}
-</style>
-
 <style scoped>
-.home {
-  min-height: 100vh;
-}
+.home { min-height: 100vh; }
 
 .back {
   position: absolute;
@@ -78,14 +58,8 @@ const published = computed(() => (events.value ?? []).filter((e) => e.published)
   gap: 16px;
 }
 
-.logo {
-  width: 200px;
-}
-
-h1 {
-  font-size: 2rem;
-  margin: 0;
-}
+.logo { width: 200px; }
+h1 { font-size: 2rem; margin: 0; }
 
 .events {
   display: flex;
@@ -108,25 +82,12 @@ h1 {
   transition: box-shadow 0.2s;
 }
 
-.event-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-}
+.event-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); }
 
-.event-name {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
+.event-name { font-size: 1.2rem; font-weight: bold; }
+.event-dates { font-size: 0.9rem; color: #666; margin-top: 4px; }
 
-.event-dates {
-  font-size: 0.9rem;
-  color: #666;
-  margin-top: 4px;
-}
-
-.empty {
-  color: #666;
-  margin-top: 24px;
-}
+.empty { color: #666; margin-top: 24px; }
 
 .admin-link {
   margin-top: 32px;
@@ -135,7 +96,5 @@ h1 {
   text-decoration: none;
 }
 
-.admin-link:hover {
-  color: #2c3e50;
-}
+.admin-link:hover { color: #2c3e50; }
 </style>

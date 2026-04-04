@@ -1,5 +1,5 @@
 import { readEvent, writeEvent } from '~/server/utils/events';
-import type { Event } from '~/types/event';
+import type { TripEvent } from '~/types/event';
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');
@@ -8,12 +8,12 @@ export default defineEventHandler(async (event) => {
   const existing = readEvent(slug);
   if (!existing) throw createError({ statusCode: 404, message: `Event "${slug}" not found` });
 
-  const body = await readBody<Partial<Event>>(event);
+  const body = await readBody<Partial<TripEvent>>(event);
 
-  const updated: Event = {
+  const updated: TripEvent = {
     ...existing,
     ...body,
-    slug, // slug is immutable
+    slug, // slug is immutable via PUT
     visuals: { ...existing.visuals, ...body.visuals },
   };
 

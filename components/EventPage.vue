@@ -1,22 +1,20 @@
 <script setup lang="ts">
-import type { Event, GlobalParticipant, BusParticipant } from '~/types/event';
+import type { TripEvent, GlobalParticipant, TransportParticipant } from '~/types/event';
 
-type Props = {
-  event: Event;
+const { event, globalParticipants } = defineProps<{
+  event: TripEvent;
   globalParticipants: GlobalParticipant[];
-};
+}>();
 
-const { event, globalParticipants } = defineProps<Props>();
-
-const busParticipants = computed<BusParticipant[]>(() =>
+const transportParticipants = computed<TransportParticipant[]>(() =>
   event.participants.map((id) => {
-    const global = globalParticipants.find((gp) => gp.id === id);
+    const found = globalParticipants.find((p) => p.id === id);
     return {
       id,
-      avatar: global?.avatar ?? `/avatars/${id}.png`,
-      quote: global?.quote ?? '',
+      avatar: found?.avatar ?? `/avatars/${id}.png`,
+      quote: found?.quote ?? '',
     };
-  })
+  }),
 );
 </script>
 
@@ -26,32 +24,17 @@ const busParticipants = computed<BusParticipant[]>(() =>
     <div class="content">
       <NuxtImg alt="Marmelab logo" class="logo" src="/assets/logo-green.png" />
       <MainTitle :message="event.title" class="title" />
-      <CountDown
+      <EventCountdown
         :start="event.start"
         :deadline="event.deadline"
         :goal-image="event.visuals.goal"
-        :participants="busParticipants"
+        :participants="transportParticipants"
       />
     </div>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  padding-top: 60px;
-}
-
-@media (max-width: 1250px) {
-  #app {
-    padding-top: 10px;
-  }
-}
-
+<style scoped>
 .back {
   width: calc(100% - 60px);
   margin: 30px;
@@ -67,7 +50,6 @@ const busParticipants = computed<BusParticipant[]>(() =>
   .back {
     margin: -10px;
     height: calc(100% + 20px);
-    width: unset;
     width: 113vw;
     height: 110vh;
   }
@@ -81,11 +63,5 @@ const busParticipants = computed<BusParticipant[]>(() =>
 .content > .title {
   display: flex;
   margin: auto;
-}
-
-#greenframe_embedable_score_page {
-  position: absolute;
-  bottom: 10px;
-  right: 40px;
 }
 </style>

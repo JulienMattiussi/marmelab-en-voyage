@@ -1,0 +1,77 @@
+/* Shared styles for all admin pages */
+
+.admin-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px 80px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  color: #2c3e50;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.admin-header h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.back-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: #2c3e50;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover:not(:disabled) { background: #1a252f; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #2c3e50;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.btn-secondary:hover { background: #e0e0e0; }
+
+.btn-preview {
+  background: #f0f0f0;
+  color: #2c3e50;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.btn-preview:hover { background: #e0e0e0; }
+
+.alert-error {
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: #c0392b;
+}

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { Event, GlobalParticipant } from '~/types/event';
+import type { TripEvent, GlobalParticipant } from '~/types/event';
 
 const route = useRoute();
 const slug = route.params.slug as string;
 
 const [{ data: event, error }, { data: globalParticipants }] = await Promise.all([
-  useFetch<Event>(`/api/events/${slug}`),
+  useFetch<TripEvent>(`/api/events/${slug}`),
   useFetch<GlobalParticipant[]>('/api/participants'),
 ]);
 

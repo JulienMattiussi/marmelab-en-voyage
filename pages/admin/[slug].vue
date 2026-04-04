@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import type { Event, GlobalParticipant } from '~/types/event';
+import type { TripEvent, GlobalParticipant } from '~/types/event';
 
 const route = useRoute();
 const router = useRouter();
-const slug = route.params.slug as string;
-const isNew = slug === 'new';
+const urlSlug = route.params.slug as string;
+const isNew = urlSlug === 'new';
 
-// Load global participants
 const { data: globalParticipants } = await useFetch<GlobalParticipant[]>('/api/participants');
 
-// Load existing event or scaffold a blank one
 const { data: existingEvent } = isNew
-  ? { data: ref(null) }
-  : await useFetch<Event>(`/api/events/${slug}`);
+  ? { data: ref<TripEvent | null>(null) }
+  : await useFetch<TripEvent>(`/api/events/${urlSlug}`);
 
-// Form state
-const form = reactive<Event>({
+const form = reactive<TripEvent>({
   slug: '',
   name: '',
   published: false,
@@ -26,38 +23,30 @@ const form = reactive<Event>({
   participants: [],
 });
 
-// Populate form when editing
 if (!isNew && existingEvent.value) {
   Object.assign(form, existingEvent.value);
 }
 
-// Auto-generate slug from name (new events only)
-watch(
-  () => form.name,
-  (name) => {
-    if (!isNew) return;
-    form.slug = name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  }
-);
+// Auto-generate slug from name on new events only
+watch(() => form.name, (name) => {
+  if (!isNew) return;
+  form.slug = slugify(name);
+});
 
-// Participant selection helpers
+// --- Participant helpers ---
 const isSelected = (id: string) => form.participants.includes(id);
 
 const toggleParticipant = (id: string) => {
   const idx = form.participants.indexOf(id);
-  if (idx >= 0) {
-    form.participants.splice(idx, 1);
-  } else {
-    form.participants.push(id);
-  }
+  if (idx >= 0) form.participants.splice(idx, 1);
+  else form.participants.push(id);
 };
 
-// Save
+const activeParticipants = computed(() =>
+  (globalParticipants.value ?? []).filter((p) => p.active),
+);
+
+// --- Save ---
 const saving = ref(false);
 const saveError = ref('');
 
@@ -69,16 +58,17 @@ const save = async () => {
       await $fetch('/api/events', { method: 'POST', body: form });
       await router.push(`/admin/${form.slug}`);
     } else {
-      await $fetch(`/api/events/${slug}`, { method: 'PUT', body: form });
+      await $fetch(`/api/events/${urlSlug}`, { method: 'PUT', body: form });
     }
   } catch (e: unknown) {
-    saveError.value = (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la sauvegarde';
+    saveError.value =
+      (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la sauvegarde';
   } finally {
     saving.value = false;
   }
 };
 
-// Image upload
+// --- Image upload ---
 const uploadingField = ref<'background' | 'goal' | null>(null);
 const uploadError = ref('');
 
@@ -89,31 +79,32 @@ const uploadImage = async (field: 'background' | 'goal', file: File) => {
   fd.append('file', file);
   fd.append('field', field);
   try {
-    const result = await $fetch<{ path: string }>(`/api/events/${isNew ? form.slug : slug}/assets`, {
-      method: 'POST',
-      body: fd,
-    });
+    const result = await $fetch<{ path: string }>(
+      `/api/events/${isNew ? form.slug : urlSlug}/assets`,
+      { method: 'POST', body: fd },
+    );
     form.visuals[field] = result.path;
   } catch (e: unknown) {
-    uploadError.value = (e as { data?: { message?: string } }).data?.message ?? 'Erreur upload';
+    uploadError.value =
+      (e as { data?: { message?: string } }).data?.message ?? 'Erreur upload';
   } finally {
     uploadingField.value = null;
   }
 };
 
-const onFileChange = (field: 'background' | 'goal', event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0];
+const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
   if (file) uploadImage(field, file);
 };
 </script>
 
 <template>
-  <div class="editor">
-    <div class="header">
+  <div class="admin-page">
+    <div class="admin-header">
       <NuxtLink to="/admin" class="back-link">← Événements</NuxtLink>
       <h1>{{ isNew ? 'Nouvel événement' : form.name }}</h1>
       <div class="header-actions">
-        <NuxtLink v-if="!isNew" :to="`/${slug}`" target="_blank" class="btn-preview">
+        <NuxtLink v-if="!isNew" :to="`/${urlSlug}`" target="_blank" class="btn-preview">
           Aperçu ↗
         </NuxtLink>
         <button class="btn-primary" :disabled="saving" @click="save">
@@ -126,7 +117,6 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
 
     <div class="sections">
 
-      <!-- General info -->
       <section class="card">
         <h2>Informations générales</h2>
         <div class="fields">
@@ -145,7 +135,6 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
         </div>
       </section>
 
-      <!-- Dates -->
       <section class="card">
         <h2>Dates</h2>
         <div class="fields">
@@ -160,44 +149,29 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
         </div>
       </section>
 
-      <!-- Visuals -->
       <section class="card">
         <h2>Visuels</h2>
-        <div v-if="isNew && !existingEvent" class="info-notice">
+        <p v-if="isNew" class="info-notice">
           Sauvegardez d'abord l'événement pour pouvoir uploader des images.
-        </div>
+        </p>
         <div class="fields">
-          <div class="field">
-            <span>Image de fond</span>
+          <div v-for="field in (['background', 'goal'] as const)" :key="field" class="field">
+            <span>{{ field === 'background' ? 'Image de fond' : 'Image destination' }}</span>
             <div class="upload-row">
               <input
                 type="file"
                 accept="image/*"
                 :disabled="isNew"
-                @change="(e) => onFileChange('background', e as unknown as Event)"
+                @change="(e) => onFileChange(field, e as InputEvent)"
               />
-              <span v-if="uploadingField === 'background'" class="uploading">Upload…</span>
-              <NuxtImg v-if="form.visuals.background" :src="form.visuals.background" class="thumb" />
-            </div>
-          </div>
-          <div class="field">
-            <span>Image destination (goal)</span>
-            <div class="upload-row">
-              <input
-                type="file"
-                accept="image/*"
-                :disabled="isNew"
-                @change="(e) => onFileChange('goal', e as unknown as Event)"
-              />
-              <span v-if="uploadingField === 'goal'" class="uploading">Upload…</span>
-              <NuxtImg v-if="form.visuals.goal" :src="form.visuals.goal" class="thumb" />
+              <span v-if="uploadingField === field" class="uploading">Upload…</span>
+              <NuxtImg v-if="form.visuals[field]" :src="form.visuals[field]" class="thumb" />
             </div>
           </div>
         </div>
         <div v-if="uploadError" class="alert-error">{{ uploadError }}</div>
       </section>
 
-      <!-- Participants -->
       <section class="card">
         <h2>
           Participants <small>({{ form.participants.length }} sélectionnés)</small>
@@ -205,26 +179,26 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
         </h2>
         <div class="participants-grid">
           <div
-            v-for="gp in (globalParticipants ?? []).filter(p => p.active)"
-            :key="gp.id"
-            :class="['participant-card', { selected: isSelected(gp.id) }]"
+            v-for="p in activeParticipants"
+            :key="p.id"
+            :class="['participant-card', { selected: isSelected(p.id) }]"
+            @click="toggleParticipant(p.id)"
           >
-            <div class="participant-top" @click="toggleParticipant(gp.id)">
-              <NuxtImg :src="gp.avatar" :alt="gp.name" class="participant-avatar" />
-              <span class="participant-name">{{ gp.name }}</span>
-              <span class="participant-check">{{ isSelected(gp.id) ? '✓' : '+' }}</span>
-            </div>
-            <p v-if="isSelected(gp.id)" class="participant-quote">{{ gp.quote }}</p>
+            <NuxtImg :src="p.avatar" :alt="p.name" class="participant-avatar" />
+            <span class="participant-name">{{ p.name }}</span>
+            <span class="participant-check">{{ isSelected(p.id) ? '✓' : '+' }}</span>
+            <p v-if="isSelected(p.id)" class="participant-quote">{{ p.quote }}</p>
           </div>
         </div>
       </section>
 
-      <!-- Publication -->
       <section class="card">
         <h2>Publication</h2>
         <label class="toggle-field">
           <input v-model="form.published" type="checkbox" />
-          <span>{{ form.published ? 'Publié (visible sur la page d\'accueil)' : 'Brouillon (non visible)' }}</span>
+          <span>
+            {{ form.published ? "Publié (visible sur la page d'accueil)" : 'Brouillon (non visible)' }}
+          </span>
         </label>
       </section>
 
@@ -233,79 +207,16 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
     <div class="footer-actions">
       <div v-if="saveError" class="alert-error">{{ saveError }}</div>
       <button class="btn-primary" :disabled="saving" @click="save">
-        {{ saving ? 'Sauvegarde…' : isNew ? 'Créer l\'événement' : 'Sauvegarder' }}
+        {{ saving ? 'Sauvegarde…' : isNew ? "Créer l'événement" : 'Sauvegarder' }}
       </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.editor {
-  max-width: 860px;
-  margin: 40px auto;
-  padding: 0 20px 80px;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  color: #2c3e50;
-}
+.header-actions { display: flex; gap: 10px; }
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.header h1 {
-  flex: 1;
-  margin: 0;
-  font-size: 1.6rem;
-}
-
-.back-link {
-  color: #666;
-  text-decoration: none;
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-primary {
-  background: #2c3e50;
-  color: white;
-  padding: 8px 18px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #1a252f;
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-preview {
-  background: #f0f0f0;
-  color: #2c3e50;
-  padding: 8px 16px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.sections {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+.sections { display: flex; flex-direction: column; gap: 20px; }
 
 .card {
   background: white;
@@ -317,14 +228,12 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
 .card h2 {
   margin: 0 0 20px;
   font-size: 1.1rem;
-  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.card h2 small {
-  font-weight: normal;
-  color: #888;
-  font-size: 0.85rem;
-}
+.card h2 small { font-weight: normal; color: #888; font-size: 0.85rem; }
 
 .manage-link {
   margin-left: auto;
@@ -334,36 +243,15 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
   text-decoration: none;
 }
 
-.manage-link:hover {
-  color: #2c3e50;
-}
+.manage-link:hover { color: #2c3e50; }
 
-.fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.full { grid-column: 1 / -1; }
 
-.field.full {
-  grid-column: 1 / -1;
-}
-
-.field > span {
-  font-size: 0.85rem;
-  font-weight: bold;
-  color: #555;
-}
-
-.field > span small {
-  font-weight: normal;
-  color: #999;
-}
+.field > span { font-size: 0.85rem; font-weight: bold; color: #555; }
+.field > span small { font-weight: normal; color: #999; }
 
 .field input[type="text"],
 .field input[type="datetime-local"] {
@@ -375,29 +263,11 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
   color: #2c3e50;
 }
 
-.field input:disabled {
-  background: #f5f5f5;
-  color: #999;
-}
+.field input:disabled { background: #f5f5f5; color: #999; }
 
-.upload-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.thumb {
-  height: 50px;
-  width: auto;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-.uploading {
-  font-size: 0.85rem;
-  color: #666;
-}
+.upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.thumb { height: 50px; width: auto; border-radius: 4px; border: 1px solid #ddd; }
+.uploading { font-size: 0.85rem; color: #666; }
 
 .info-notice {
   background: #fff3e0;
@@ -419,48 +289,22 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
   border: 2px solid #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
-  transition: border-color 0.15s;
-}
-
-.participant-card.selected {
-  border-color: #2c3e50;
-}
-
-.participant-top {
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px;
-  cursor: pointer;
   background: #fafafa;
+  transition: border-color 0.15s;
+  flex-wrap: wrap;
 }
 
-.participant-card.selected .participant-top {
-  background: #ecf0f1;
-}
+.participant-card.selected { border-color: #2c3e50; background: #ecf0f1; }
 
-.participant-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.participant-name {
-  flex: 1;
-  font-size: 0.85rem;
-  font-weight: bold;
-}
-
-.participant-check {
-  font-weight: bold;
-  color: #888;
-  font-size: 1rem;
-}
-
-.participant-card.selected .participant-check {
-  color: #2c3e50;
-}
+.participant-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.participant-name { flex: 1; font-size: 0.85rem; font-weight: bold; }
+.participant-check { font-weight: bold; color: #888; }
+.participant-card.selected .participant-check { color: #2c3e50; }
 
 .participant-quote {
   margin: 0;
@@ -469,37 +313,11 @@ const onFileChange = (field: 'background' | 'goal', event: Event) => {
   font-size: 0.78rem;
   color: #666;
   font-style: italic;
-  background: white;
+  width: 100%;
 }
 
-.toggle-field {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
+.toggle-field { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.95rem; }
+.toggle-field input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
-.toggle-field input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-.footer-actions {
-  margin-top: 32px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 16px;
-}
-
-.alert-error {
-  background: #fdecea;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
-  padding: 10px 14px;
-  font-size: 0.9rem;
-  color: #c0392b;
-}
+.footer-actions { margin-top: 32px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
 </style>
