@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { TripEvent, GlobalParticipant } from '~/types/event';
 
+const { clear: clearSession } = useUserSession();
+const logout = async () => { await clearSession(); await navigateTo('/login'); };
+
 const { data: events, refresh } = await useFetch<TripEvent[]>('/api/events');
 const { data: participants } = await useFetch<GlobalParticipant[]>('/api/participants');
 
@@ -10,7 +13,11 @@ const activeParticipantCount = (event: TripEvent) =>
   event.participants.filter((id) => activeIds.value.has(id)).length;
 
 const sorted = computed(() =>
-  [...(events.value ?? [])].sort((a, b) => a.name.localeCompare(b.name)),
+  [...(events.value ?? [])].sort((a, b) => {
+    const da = Date.parse(a.deadline) || Infinity;
+    const db = Date.parse(b.deadline) || Infinity;
+    return db - da;
+  }),
 );
 
 const atLimit = computed(() => (events.value?.length ?? 0) >= EVENT_LIMIT);
@@ -44,6 +51,7 @@ const deleteEvent = async (slug: string) => {
       <span v-else class="limit-reached" title="Supprimez un événement pour en créer un nouveau">
         Limite atteinte ({{ EVENT_LIMIT }}/{{ EVENT_LIMIT }})
       </span>
+      <button class="btn-logout" @click="logout">Déconnexion</button>
     </div>
 
     <div v-if="deleteError" class="alert-error">{{ deleteError }}</div>
@@ -165,4 +173,20 @@ const deleteEvent = async (slug: string) => {
 
 .btn-delete:hover:not(:disabled) { background: #fdecea; }
 .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-logout {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  color: #666;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.btn-logout:hover { background: #f5f5f5; }
 </style>

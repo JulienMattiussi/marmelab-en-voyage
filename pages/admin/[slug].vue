@@ -12,12 +12,14 @@ const { data: existingEvent } = isNew
   ? { data: ref<TripEvent | null>(null) }
   : await useFetch<TripEvent>(`/api/events/${urlSlug}`);
 
+const currentYear = new Date().getFullYear();
+
 const form = reactive<TripEvent>({
-  slug: '',
-  name: '',
+  slug: isNew ? slugify(`Marmelab ${currentYear}`) : '',
+  name: isNew ? `Marmelab ${currentYear}` : '',
   published: false,
-  title: '',
-  start: '',
+  title: isNew ? 'Et on est reparti !!!' : '',
+  start: isNew ? new Date().toISOString().slice(0, 16) : '',
   deadline: '',
   visuals: { background: '', goal: '' },
   participants: [],
@@ -46,9 +48,27 @@ const activeParticipants = computed(() =>
   (globalParticipants.value ?? []).filter((p) => p.active),
 );
 
+// --- Delete ---
+const deleting = ref(false);
+
+const deleteEvent = async () => {
+  if (!confirm(`Supprimer l'événement "${form.name}" ? Cette action est irréversible.`)) return;
+  deleting.value = true;
+  try {
+    await $fetch(`/api/events/${urlSlug}`, { method: 'DELETE' });
+    await router.push('/admin');
+  } catch (e: unknown) {
+    saveError.value =
+      (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la suppression';
+  } finally {
+    deleting.value = false;
+  }
+};
+
 // --- Save ---
 const saving = ref(false);
 const saveError = ref('');
+const toast = useAppToast();
 
 const save = async () => {
   saving.value = true;
@@ -59,10 +79,13 @@ const save = async () => {
       await router.push(`/admin/${form.slug}`);
     } else {
       await $fetch(`/api/events/${urlSlug}`, { method: 'PUT', body: form });
+      toast.success('Événement sauvegardé');
     }
   } catch (e: unknown) {
-    saveError.value =
+    const message =
       (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la sauvegarde';
+    saveError.value = message;
+    toast.error(message);
   } finally {
     saving.value = false;
   }
@@ -122,15 +145,15 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
         <div class="fields">
           <label class="field">
             <span>Nom de l'événement</span>
-            <input v-model="form.name" type="text" placeholder="Belmont 2025" />
+            <input v-model="form.name" type="text" :placeholder="`Marmelab ${currentYear}`" />
           </label>
           <label class="field">
             <span>Slug <small>(URL : /{{ form.slug || 'mon-evenement' }})</small></span>
-            <input v-model="form.slug" type="text" placeholder="belmont-2025" :disabled="!isNew" />
+            <input v-model="form.slug" type="text" :placeholder="slugify(`Marmelab ${currentYear}`)" :disabled="!isNew" />
           </label>
           <label class="field full">
             <span>Titre affiché sur la page</span>
-            <input v-model="form.title" type="text" placeholder="Belmont, nous voici !!!" />
+            <input v-model="form.title" type="text" placeholder="Et on est reparti !!!" />
           </label>
         </div>
       </section>
@@ -209,12 +232,31 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
       <button class="btn-primary" :disabled="saving" @click="save">
         {{ saving ? 'Sauvegarde…' : isNew ? "Créer l'événement" : 'Sauvegarder' }}
       </button>
+      <button v-if="!isNew" class="btn-delete" :disabled="deleting" @click="deleteEvent">
+        {{ deleting ? '…' : 'Supprimer' }}
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.header-actions { display: flex; gap: 10px; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+.btn-delete {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e53935;
+  background: white;
+  color: #e53935;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-delete:hover:not(:disabled) { background: #fdecea; }
+.btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .sections { display: flex; flex-direction: column; gap: 20px; }
 
