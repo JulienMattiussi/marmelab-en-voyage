@@ -1,0 +1,23 @@
+[
+  { "id": "adrieng", "name": "Adrien G.", "avatar": "/avatars/adrieng.png" },
+  { "id": "alexandra", "name": "Alexandra", "avatar": "/avatars/alexandra.png" },
+  { "id": "anthony", "name": "Anthony", "avatar": "/avatars/anthony.png" },
+  { "id": "antoine", "name": "Antoine", "avatar": "/avatars/antoine.png" },
+  { "id": "arnaud", "name": "Arnaud", "avatar": "/avatars/arnaud.png" },
+  { "id": "benoit", "name": "Benoît", "avatar": "/avatars/benoit.png" },
+  { "id": "caroline", "name": "Caroline", "avatar": "/avatars/caroline.png" },
+  { "id": "cindy", "name": "Cindy", "avatar": "/avatars/cindy.png" },
+  { "id": "erwan", "name": "Erwan", "avatar": "/avatars/erwan.png" },
+  { "id": "francois", "name": "François", "avatar": "/avatars/francois.jpg" },
+  { "id": "gildas", "name": "Gildas", "avatar": "/avatars/gildas.jpg" },
+  { "id": "guillaume", "name": "Guillaume", "avatar": "/avatars/guillaume.png" },
+  { "id": "guiom", "name": "Guiom", "avatar": "/avatars/guiom.png" },
+  { "id": "jeremie", "name": "Jérémie", "avatar": "/avatars/jeremie.jpg" },
+  { "id": "jibe", "name": "Jibe", "avatar": "/avatars/jibe.png" },
+  { "id": "jonathan", "name": "Jonathan", "avatar": "/avatars/jonathan.png" },
+  { "id": "julio", "name": "Julio", "avatar": "/avatars/julio.jpg" },
+  { "id": "karen", "name": "Karen", "avatar": "/avatars/karen.jpg" },
+  { "id": "julienmaire", "name": "Julien M.", "avatar": "/avatars/julienmaire.png" },
+  { "id": "thibault", "name": "Thibault", "avatar": "/avatars/thibault.png" },
+  { "id": "matthieu", "name": "Matthieu", "avatar": "/avatars/matthieu.png" }
+]

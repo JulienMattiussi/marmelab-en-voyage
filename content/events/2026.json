@@ -1,0 +1,30 @@
+{
+  "slug": "2026",
+  "name": "2026",
+  "published": false,
+  "title": "On va ou ?",
+  "start": "2026-04-04T12:22",
+  "deadline": "2026-06-11T12:22",
+  "visuals": {
+    "background": "",
+    "goal": ""
+  },
+  "participants": [
+    {
+      "id": "adrieng",
+      "quote": ""
+    },
+    {
+      "id": "alexandra",
+      "quote": ""
+    },
+    {
+      "id": "anthony",
+      "quote": ""
+    },
+    {
+      "id": "antoine",
+      "quote": ""
+    }
+  ]
+}
