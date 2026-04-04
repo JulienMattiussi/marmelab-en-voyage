@@ -20,14 +20,14 @@ const transportParticipants = computed<TransportParticipant[]>(() =>
 
 <template>
   <div>
-    <NuxtImg class="back" alt="Background" :src="event.visuals.background" />
+    <NuxtImg class="back" alt="Background" :src="event.visuals.background || '/assets/back.png'" />
     <div class="content">
       <NuxtImg alt="Marmelab logo" class="logo" src="/assets/logo-green.png" />
       <MainTitle :message="event.title" class="title" />
       <EventCountdown
         :start="event.start"
         :deadline="event.deadline"
-        :goal-image="event.visuals.goal"
+        :goal-image="event.visuals.goal || '/assets/goal.png'"
         :participants="transportParticipants"
       />
     </div>
