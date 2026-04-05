@@ -73,28 +73,28 @@ h1 { font-size: 2rem; margin: 0; }
 .event-card {
   display: flex;
   flex-direction: column;
-  background: white;
-  border-radius: 12px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
   padding: 16px 20px;
   text-decoration: none;
-  color: #2c3e50;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: var(--color-text);
+  box-shadow: var(--shadow-raised);
   transition: box-shadow 0.2s;
 }
 
 .event-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); }
 
 .event-name { font-size: 1.2rem; font-weight: bold; }
-.event-dates { font-size: 0.9rem; color: #666; margin-top: 4px; }
+.event-dates { font-size: var(--font-size-base); color: var(--color-text-muted); margin-top: 4px; }
 
-.empty { color: #666; margin-top: 24px; }
+.empty { color: var(--color-text-muted); margin-top: 24px; }
 
 .admin-link {
   margin-top: 32px;
-  color: #666;
-  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
   text-decoration: none;
 }
 
-.admin-link:hover { color: #2c3e50; }
+.admin-link:hover { color: var(--color-text); }
 </style>

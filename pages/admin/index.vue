@@ -33,8 +33,7 @@ const deleteEvent = async (slug: string) => {
     await $fetch(`/api/events/${slug}`, { method: 'DELETE' });
     await refresh();
   } catch (e: unknown) {
-    deleteError.value =
-      (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la suppression';
+    deleteError.value = extractErrorMessage(e, 'Erreur lors de la suppression');
   } finally {
     deleting.value = null;
   }
@@ -157,22 +156,6 @@ const deleteEvent = async (slug: string) => {
 
 .badge.published { background: var(--color-success-light); color: var(--color-success); }
 .badge.draft { background: var(--color-warning-light); color: var(--color-warning); }
-
-.btn-delete {
-  padding: var(--btn-padding);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-danger);
-  background: var(--color-bg-card);
-  color: var(--color-danger);
-  font-size: var(--font-size-base);
-  cursor: pointer;
-  font-family: inherit;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-delete:hover:not(:disabled) { background: var(--color-danger-light); }
-.btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-logout {
   padding: var(--btn-padding);

@@ -33,10 +33,7 @@ const imageForSlot = (slot: number): string => {
         :src="imageForSlot(slot)"
         preload
       />
-      <span
-        class="degree-label"
-        :style="`visibility: ${showDegrees ? 'visible' : 'hidden'};`"
-      >0°</span>
+      <span v-show="showDegrees" class="degree-label">0°</span>
     </div>
   </div>
 </template>
@@ -53,7 +50,7 @@ img.beer {
 
 span.degree-label {
   font-weight: bold;
-  color: red;
+  color: var(--color-countdown-numbers);
   position: relative;
   left: -39px;
   bottom: 17px;

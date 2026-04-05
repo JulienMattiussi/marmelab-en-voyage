@@ -6,10 +6,10 @@ export default defineConfig({
   workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  reporter: 'html',
+  reporter: [['html', { open: 'never' }]],
 
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:4568',
     trace: 'on-first-retry',
   },
 
@@ -21,8 +21,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'yarn dev',
-    url: 'http://localhost:3000',
+    command: 'yarn nuxt dev --dotenv .env.test --port 4568',
+    url: 'http://localhost:4568',
     reuseExistingServer: !process.env.CI,
   },
 });

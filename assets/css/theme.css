@@ -46,4 +46,9 @@
 
   /* Spacing */
   --btn-padding: 8px 16px;
+
+  /* Countdown-specific colors */
+  --color-countdown-numbers: var(--color-danger);
+  --color-countdown-days:    brown;
+  --color-countdown-reached: var(--color-success);
 }

@@ -5,7 +5,7 @@ import {
   type TimeComponents,
 } from '~/utils/countdownMath';
 
-export type CountdownState = {
+type CountdownState = {
   /** Remaining time broken into human-readable parts. */
   time: ComputedRef<TimeComponents>;
   /** Journey progress 0–100. */

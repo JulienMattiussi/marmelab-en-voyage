@@ -2,13 +2,13 @@
 
 ## What this project is
 
-A Nuxt 3 web application that serves as both a **public countdown page** for Marmelab team trips and an **admin CMS** to create and manage those events. Each event has a dedicated page at `/<slug>` showing a countdown, a beer-progress bar, a transport vehicle with participant speech bubbles, and visual assets. The admin lives at `/admin` and is protected by GitHub OAuth.
+A Nuxt 4 web application that serves as both a **public countdown page** for Marmelab team trips and an **admin CMS** to create and manage those events. Each event has a dedicated page at `/<slug>` showing a countdown, a beer-progress bar, a transport vehicle with participant speech bubbles, and visual assets. The admin lives at `/admin` and is protected by GitHub OAuth.
 
 ## Stack
 
-- **Nuxt 3** — SSR, file-based routing, auto-imports, H3 server routes
+- **Nuxt 4** — SSR, file-based routing, auto-imports, H3 server routes
 - **Vue 3** — Composition API only (`<script setup>`)
-- **TypeScript** — strict, no implicit `any`
+- **TypeScript** — strict, no implicit `any`, `noUncheckedIndexedAccess` enabled (from `.nuxt/tsconfig.json`)
 - **yarn** — package manager (not npm)
 - **Vitest** + `@vue/test-utils` + `happy-dom` — unit tests
 - **Playwright** — E2E tests
@@ -103,6 +103,7 @@ tests/
 utils/
   constants.ts            # EVENT_LIMIT = 5
   countdownMath.ts        # pure math: computeProgress, splitDuration, beerCount, padTime
+  error.ts                # extractErrorMessage(e, fallback) — shared error extraction for $fetch catch blocks
   slugify.ts              # shared slug/ID generation
 ```
 
@@ -110,19 +111,26 @@ utils/
 
 - **No type collisions**: always check for name conflicts with DOM/global types before naming a type.
 - **No duplicated code**: shared logic lives in `utils/`, shared styles in `assets/css/admin.css`, shared constants in `utils/constants.ts`.
-- **Theme variables**: all colors, fonts, radii, shadows and spacing live in `assets/css/theme.css` as CSS custom properties. Never hardcode these values in component styles — always reference a variable.
+- **Theme variables**: all colors, fonts, radii, shadows and spacing live in `assets/css/theme.css` as CSS custom properties. Never hardcode these values in component styles — always reference a variable. This includes countdown-specific colors (`--color-countdown-numbers`, `--color-countdown-days`, `--color-countdown-reached`).
 - **`node:fs` via wrapper**: never import `node:fs` directly in server code — use `~/server/utils/fs` so tests can mock it cleanly.
 - **Nuxt auto-imports**: `utils/` and `composables/` are auto-imported by Nuxt; no explicit import needed in `.vue` files or server routes.
 - **No speculative abstractions**: don't add helpers, fallbacks, or features that aren't required.
-- **`vue-tsc --noEmit`** for typechecking (not `nuxt typecheck`) — the latter forces `.nuxt/tsconfig.json` which includes `node_modules/@nuxt/ui` source files that have upstream type errors.
-- **Toasts**: use `useAppToast()` composable (`toast.success` / `toast.error`) — do not use `@nuxt/ui`'s `useToast` which depends on Tailwind CSS not present in this project.
+- **`vue-tsc --noEmit`** for typechecking (not `nuxt typecheck`).
+- **Toasts**: use `useAppToast()` composable (`toast.success` / `toast.error`) — do not use any external toast composable.
 - **`<UApp>`** is not used — `app.vue` wraps content in a plain `<div>` with `<AppToast />` for notifications.
+- **Error extraction**: use `extractErrorMessage(e, fallback?)` from `~/utils/error` in all `catch` blocks that read `$fetch` error messages — do not repeat the `(e as { data?: { message?: string } }).data?.message` cast inline.
+- **`noUncheckedIndexedAccess`**: Nuxt 4 enables this in `.nuxt/tsconfig.json`. Array and Record index access returns `T | undefined` — use `arr[i]!` when you know the element exists, or add a guard.
+
+## Dependency notes
+
+- **yarn resolutions** in `package.json` force `@vue/compiler-*` packages and `entities` to consistent versions — this is required to avoid a yarn 1 flat-hoisting conflict that breaks `vue-tsc`. Do not remove these resolutions.
+- `@nuxt/ui`, `@nuxt/icon`, `@nuxt/fonts` are **not** used and should not be added back without a specific need.
 
 ## Commands
 
 ```bash
 make install       # yarn install + playwright browsers
-make dev           # start dev server
+make dev           # start dev server on http://localhost:4567
 make build         # production build
 make lint          # ESLint
 make typecheck     # vue-tsc --noEmit
@@ -139,7 +147,7 @@ make test          # unit + e2e
 - Vue composables (`ref`, `computed`, etc.) and Nuxt globals (`useFetch`, `useRoute`, etc.) are stubbed globally in `tests/setup.ts`.
 - Use `as never` instead of `as unknown as Buffer` for mock return value casts.
 - **E2E auth**: all admin E2E tests use the authenticated fixture from `tests/e2e/fixtures.ts`, which calls `POST /api/__test-login` to create a session before each test. That endpoint is disabled in production (`NODE_ENV === 'production'`).
-- **Playwright hydration timing**: in headless mode, clicks can fire before Vue has attached event listeners. Use `await page.waitForLoadState('networkidle')` after navigation on pages with interactive UI before attempting to click.
+- **Playwright hydration timing**: in headless mode, clicks can fire before Vue has attached event listeners. Use `await page.waitForLoadState('networkidle')` after navigation on **any page with interactive UI** (buttons, forms) before attempting to click. This applies to all admin pages, not just `/admin/new`.
 - **E2E seed data**: `content/events/belmont-2025.json` is the seed event required by E2E tests — it is the only event file tracked in git (all others are gitignored).
 
 ## What is and isn't versioned

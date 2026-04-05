@@ -58,8 +58,7 @@ const deleteEvent = async () => {
     await $fetch(`/api/events/${urlSlug}`, { method: 'DELETE' });
     await router.push('/admin');
   } catch (e: unknown) {
-    saveError.value =
-      (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la suppression';
+    saveError.value = extractErrorMessage(e, 'Erreur lors de la suppression');
   } finally {
     deleting.value = false;
   }
@@ -82,8 +81,7 @@ const save = async () => {
       toast.success('Événement sauvegardé');
     }
   } catch (e: unknown) {
-    const message =
-      (e as { data?: { message?: string } }).data?.message ?? 'Erreur lors de la sauvegarde';
+    const message = extractErrorMessage(e, 'Erreur lors de la sauvegarde');
     saveError.value = message;
     toast.error(message);
   } finally {
@@ -108,8 +106,7 @@ const uploadImage = async (field: 'background' | 'goal', file: File) => {
     );
     form.visuals[field] = result.path;
   } catch (e: unknown) {
-    uploadError.value =
-      (e as { data?: { message?: string } }).data?.message ?? 'Erreur upload';
+    uploadError.value = extractErrorMessage(e, 'Erreur upload');
   } finally {
     uploadingField.value = null;
   }
@@ -242,22 +239,6 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 <style scoped>
 .header-actions { display: flex; gap: 10px; align-items: center; }
 
-.btn-delete {
-  padding: var(--btn-padding);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-danger);
-  background: var(--color-bg-card);
-  color: var(--color-danger);
-  font-size: var(--font-size-base);
-  font-family: inherit;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-delete:hover:not(:disabled) { background: var(--color-danger-light); }
-.btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .sections { display: flex; flex-direction: column; gap: 20px; }
 
 .card {
@@ -292,7 +273,7 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field.full { grid-column: 1 / -1; }
 
-.field > span { font-size: 0.85rem; font-weight: bold; color: #555; }
+.field > span { font-size: var(--font-size-sm); font-weight: bold; color: var(--color-text-muted); }
 .field > span small { font-weight: normal; color: var(--color-text-faint); }
 
 .field input[type="text"],
@@ -308,7 +289,7 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 .field input:disabled { background: var(--color-bg); color: var(--color-text-faint); }
 
 .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.thumb { height: 50px; width: auto; border-radius: 4px; border: 1px solid var(--color-border); }
+.thumb { height: 50px; width: auto; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }
 .uploading { font-size: 0.85rem; color: var(--color-text-muted); }
 
 .info-notice {

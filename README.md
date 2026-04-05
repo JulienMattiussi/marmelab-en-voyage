@@ -1,75 +1,45 @@
-# Nuxt Minimal Starter
+# Marmelab en Voyage
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A Nuxt 4 web application serving as a **public countdown page** for Marmelab team trips and an **admin CMS** to create and manage those events.
+
+- Public event pages at `/<slug>` — countdown, beer-progress bar, transport vehicle with participant speech bubbles
+- Admin at `/admin` — protected by GitHub OAuth
+
+## Stack
+
+- **Nuxt 4** — SSR, file-based routing, H3 server routes
+- **Vue 3** — Composition API (`<script setup>`)
+- **TypeScript** — strict
+- **yarn** — package manager
+- **Vitest** — unit tests
+- **Playwright** — E2E tests
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+make install
 ```
 
-## Development Server
+Copy `.env.example` to `.env` and fill in the required values:
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+```
+NUXT_SESSION_PASSWORD=        # random 32-char secret
+NUXT_OAUTH_GITHUB_CLIENT_ID=  # from your GitHub OAuth App
+NUXT_OAUTH_GITHUB_CLIENT_SECRET=
+GITHUB_ALLOWED_LOGIN=         # exact GitHub username allowed to access /admin
 ```
 
-## Production
-
-Build the application for production:
+## Commands
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+make dev          # start dev server on http://localhost:4567
+make build        # production build
+make preview      # preview production build
+make lint         # ESLint
+make typecheck    # TypeScript type checking
+make test         # unit + e2e tests
+make test-unit    # unit tests only
+make test-watch   # unit tests in watch mode
+make test-e2e     # end-to-end tests
+make test-e2e-ui  # end-to-end tests with Playwright UI
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

@@ -45,20 +45,7 @@
 .btn-primary:hover:not(:disabled) { background: var(--color-primary-dark); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-secondary {
-  background: var(--color-bg-hover);
-  color: var(--color-primary);
-  padding: var(--btn-padding);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-size: var(--font-size-base);
-  font-family: inherit;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-secondary:hover { background: var(--color-border); }
-
+.btn-secondary,
 .btn-preview {
   background: var(--color-bg-hover);
   color: var(--color-primary);
@@ -69,10 +56,28 @@
   font-family: inherit;
   display: inline-flex;
   align-items: center;
-  white-space: nowrap;
 }
 
+.btn-secondary:hover,
 .btn-preview:hover { background: var(--color-border); }
+
+.btn-preview { white-space: nowrap; }
+
+.btn-delete {
+  padding: var(--btn-padding);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger);
+  background: var(--color-bg-card);
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-delete:hover:not(:disabled) { background: var(--color-danger-light); }
+.btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .alert-error {
   background: var(--color-error-light);

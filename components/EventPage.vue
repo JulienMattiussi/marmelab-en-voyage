@@ -38,7 +38,6 @@ const transportParticipants = computed<TransportParticipant[]>(() =>
 
 <style scoped>
 .back {
-  width: calc(100% - 60px);
   margin: 30px;
   position: absolute;
   top: 0;

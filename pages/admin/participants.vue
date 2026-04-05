@@ -76,7 +76,7 @@ const submitAdd = async () => {
     showAddForm.value = false;
     await refresh();
   } catch (e: unknown) {
-    addError.value = (e as { data?: { message?: string } }).data?.message ?? 'Erreur';
+    addError.value = extractErrorMessage(e);
   } finally {
     adding.value = false;
   }
@@ -167,9 +167,9 @@ const submitAdd = async () => {
 
 <style scoped>
 .add-form {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  background: var(--color-bg-faint);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 20px 24px;
   margin-bottom: 32px;
 }
@@ -179,39 +179,39 @@ const submitAdd = async () => {
 .add-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 
 .add-field { display: flex; flex-direction: column; gap: 5px; }
-.add-field > span { font-size: 0.82rem; font-weight: bold; color: #555; }
+.add-field > span { font-size: var(--font-size-sm); font-weight: bold; color: var(--color-text-muted); }
 
 .add-field input {
   padding: 8px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
   font-family: inherit;
-  color: #2c3e50;
+  color: var(--color-text);
 }
 
-.id-preview { color: #888; font-size: 0.78rem; }
+.id-preview { color: var(--color-text-subtle); font-size: 0.78rem; }
 
 .add-actions { display: flex; justify-content: space-between; align-items: center; }
-.add-hint { color: #999; font-size: 0.82rem; margin: 0; }
+.add-hint { color: var(--color-text-faint); font-size: var(--font-size-sm); margin: 0; }
 
 .section-title {
   font-size: 1rem;
-  color: #555;
+  color: var(--color-text-muted);
   margin: 0 0 14px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.section-title small { font-weight: normal; color: #aaa; }
+.section-title small { font-weight: normal; color: var(--color-text-faint); }
 
 .count-badge {
-  background: #e0e0e0;
-  color: #555;
+  background: var(--color-border);
+  color: var(--color-text-muted);
   border-radius: 20px;
   padding: 1px 8px;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
 }
 
 .inactive-section { margin-top: 40px; }
@@ -219,9 +219,9 @@ const submitAdd = async () => {
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   padding: 16px;
   display: flex;
   gap: 14px;
@@ -238,7 +238,7 @@ const submitAdd = async () => {
   position: absolute;
   bottom: -2px;
   right: -2px;
-  background: #2c3e50;
+  background: var(--color-primary);
   color: white;
   width: 20px;
   height: 20px;
@@ -258,43 +258,43 @@ const submitAdd = async () => {
   font-weight: bold;
   font-size: 0.95rem;
   padding: 4px 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   font-family: inherit;
-  color: #2c3e50;
+  color: var(--color-text);
   width: 100%;
   box-sizing: border-box;
 }
 
 .input-quote {
-  font-size: 0.82rem;
+  font-size: var(--font-size-sm);
   padding: 4px 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   font-family: inherit;
-  color: #555;
+  color: var(--color-text-muted);
   font-style: italic;
   width: 100%;
   box-sizing: border-box;
 }
 
 .input-name:focus,
-.input-quote:focus { outline: none; border-color: #2c3e50; }
+.input-quote:focus { outline: none; border-color: var(--color-primary); }
 
-.inactive-name { font-weight: bold; font-size: 0.95rem; color: #2c3e50; }
-.inactive-quote { font-size: 0.82rem; color: #555; font-style: italic; }
+.inactive-name { font-weight: bold; font-size: 0.95rem; color: var(--color-text); }
+.inactive-quote { font-size: var(--font-size-sm); color: var(--color-text-muted); font-style: italic; }
 
 .card-actions { display: flex; gap: 6px; margin-top: 4px; }
 
 .btn-save {
   flex: 1;
   padding: 5px 10px;
-  background: #2c3e50;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-family: inherit;
 }
 
@@ -302,27 +302,27 @@ const submitAdd = async () => {
 
 .btn-disable {
   padding: 5px 10px;
-  background: #f0f0f0;
-  color: #c0392b;
+  background: var(--color-bg-hover);
+  color: var(--color-danger);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-family: inherit;
 }
 
-.btn-disable:hover { background: #fdecea; }
+.btn-disable:hover { background: var(--color-error-light); }
 
 .btn-enable {
   padding: 5px 10px;
-  background: #f0f0f0;
-  color: #2e7d32;
+  background: var(--color-bg-hover);
+  color: var(--color-success);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: var(--font-size-sm);
   font-family: inherit;
 }
 
-.btn-enable:hover { background: #e6f4ea; }
+.btn-enable:hover { background: var(--color-success-light); }
 </style>

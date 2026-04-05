@@ -24,8 +24,6 @@ vi.stubGlobal('nextTick', nextTick);
 
 // Mock Nuxt-specific globals.
 vi.stubGlobal('useState', (_key: string, init: () => unknown) => ref(init()));
-vi.stubGlobal('defineShortcuts', vi.fn());
-vi.stubGlobal('definePageMeta', vi.fn());
 vi.stubGlobal('useRoute', vi.fn(() => ({ params: {}, query: {} })));
 vi.stubGlobal('useRouter', vi.fn(() => ({ push: vi.fn() })));
 vi.stubGlobal('useFetch', vi.fn(() => ({ data: ref(null), error: ref(null), refresh: vi.fn() })));

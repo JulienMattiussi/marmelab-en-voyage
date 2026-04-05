@@ -71,12 +71,12 @@ const reached = computed(() => ({
 
 .numbers {
   font-size: 60px;
-  color: red;
+  color: var(--color-countdown-numbers);
   vertical-align: bottom;
 }
 
 .reached {
-  color: green !important;
+  color: var(--color-countdown-reached);
 }
 
 @media (max-width: 1250px) {
@@ -91,7 +91,7 @@ const reached = computed(() => ({
 
 .days {
   font-size: 100px;
-  color: brown;
+  color: var(--color-countdown-days);
   vertical-align: bottom;
   line-height: 100px;
 }
