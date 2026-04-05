@@ -145,5 +145,12 @@
     "avatar": "/avatars/matthieu.png",
     "quote": "Mais qu'est-ce-que je fait là",
     "active": true
+  },
+  {
+    "id": "jerome",
+    "name": "Jérome",
+    "avatar": "/avatars/jerome.jpg",
+    "quote": "J'ai pris ma switch",
+    "active": true
   }
 ]
