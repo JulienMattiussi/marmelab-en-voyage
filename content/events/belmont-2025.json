@@ -1,6 +1,6 @@
 {
   "slug": "belmont-2025",
-  "name": "Belmont 2026",
+  "name": "Belmont 2025",
   "published": true,
   "title": "Belmont, nous voila !!!",
   "start": "2025-04-28T09:00:00.000Z",
@@ -10,9 +10,26 @@
     "goal": "/assets/goal.png"
   },
   "participants": [
-    "adrieng", "alexandra", "anthony", "antoine", "arnaud",
-    "benoit", "caroline", "cindy", "erwan", "francois",
-    "gildas", "guillaume", "guiom", "jeremie", "jibe",
-    "jonathan", "julio", "karen", "julienmaire", "thibault", "matthieu"
+    "adrieng",
+    "alexandra",
+    "anthony",
+    "antoine",
+    "arnaud",
+    "benoit",
+    "caroline",
+    "cindy",
+    "erwan",
+    "francois",
+    "gildas",
+    "guillaume",
+    "guiom",
+    "jeremie",
+    "jibe",
+    "jonathan",
+    "julio",
+    "karen",
+    "julienmaire",
+    "thibault",
+    "matthieu"
   ]
 }
