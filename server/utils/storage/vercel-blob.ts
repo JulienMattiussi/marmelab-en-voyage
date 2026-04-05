@@ -14,6 +14,7 @@ export class VercelBlobDriver implements StorageDriver {
       access: 'public',
       contentType: 'application/json',
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
   }
 
@@ -32,6 +33,7 @@ export class VercelBlobDriver implements StorageDriver {
       access: 'public',
       contentType,
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
     return url;
   }
