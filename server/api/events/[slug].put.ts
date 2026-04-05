@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');
   if (!slug) throw createError({ statusCode: 400, message: 'Missing slug' });
 
-  const existing = readEvent(slug);
+  const existing = await readEvent(slug);
   if (!existing) throw createError({ statusCode: 404, message: `Event "${slug}" not found` });
 
   const body = await readBody<Partial<TripEvent>>(event);
@@ -17,6 +17,6 @@ export default defineEventHandler(async (event) => {
     visuals: { ...existing.visuals, ...body.visuals },
   };
 
-  writeEvent(slug, updated);
+  await writeEvent(slug, updated);
   return updated;
 });

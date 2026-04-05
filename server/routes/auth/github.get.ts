@@ -1,8 +1,10 @@
+import config from '~/server/utils/config';
+
 export default defineOAuthGitHubEventHandler({
   async onSuccess(event, { user }) {
-    const allowedLogin = process.env.GITHUB_ALLOWED_LOGIN;
+    const allowedLogin = config.get('githubAllowedLogin');
 
-if (!allowedLogin || user.login !== allowedLogin) {
+    if (!allowedLogin || user.login !== allowedLogin) {
       throw createError({ statusCode: 403, message: 'Access denied' });
     }
 

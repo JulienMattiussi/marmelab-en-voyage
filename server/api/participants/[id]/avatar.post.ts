@@ -1,13 +1,13 @@
 import { readMultipartFormData } from 'h3';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, extname } from 'path';
+import { extname } from 'node:path';
 import { readParticipants, writeParticipants } from '~/server/utils/events';
+import { getStorage } from '~/server/utils/storage';
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id');
   if (!id) throw createError({ statusCode: 400, message: 'Missing id' });
 
-  const participants = readParticipants();
+  const participants = await readParticipants();
   const participant = participants.find((p) => p.id === id);
   if (!participant) throw createError({ statusCode: 404, message: `Participant "${id}" not found` });
 
@@ -19,15 +19,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const ext = extname(filePart.filename);
-  const filename = `${id}${ext}`;
-  const dir = join(process.cwd(), 'public', 'avatars');
+  const contentType = filePart.type ?? 'image/png';
+  const storage = await getStorage();
+  const url = await storage.putAsset(`avatars/${id}${ext}`, filePart.data, contentType);
 
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, filename), filePart.data);
+  participant.avatar = url;
+  await writeParticipants(participants);
 
-  const publicPath = `/avatars/${filename}`;
-  participant.avatar = publicPath;
-  writeParticipants(participants);
-
-  return { path: publicPath };
+  return { path: url };
 });

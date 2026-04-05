@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const id = slugify(body.name, '');
-  const participants = readParticipants();
+  const participants = await readParticipants();
 
   if (participants.some((p) => p.id === id)) {
     throw createError({ statusCode: 409, message: `Un participant avec l'identifiant "${id}" existe déjà` });
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   };
 
   participants.push(newParticipant);
-  writeParticipants(participants);
+  await writeParticipants(participants);
 
   return newParticipant;
 });

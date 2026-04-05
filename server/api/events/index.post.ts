@@ -9,11 +9,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'slug and name are required' });
   }
 
-  if (readEvent(body.slug)) {
+  if (await readEvent(body.slug)) {
     throw createError({ statusCode: 409, message: `Event "${body.slug}" already exists` });
   }
 
-  if (listEvents().length >= EVENT_LIMIT) {
+  if ((await listEvents()).length >= EVENT_LIMIT) {
     throw createError({ statusCode: 403, message: `La limite de ${EVENT_LIMIT} événements est atteinte. Supprimez un événement pour en créer un nouveau.` });
   }
 
@@ -28,6 +28,6 @@ export default defineEventHandler(async (event) => {
     participants: body.participants ?? [],
   };
 
-  writeEvent(newEvent.slug, newEvent);
+  await writeEvent(newEvent.slug, newEvent);
   return newEvent;
 });

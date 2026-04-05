@@ -21,6 +21,7 @@ test.describe('Admin — events list', () => {
 test.describe('Admin — new event', () => {
   test('auto-generates slug from name', async ({ page }) => {
     await page.goto('/admin/new');
+    await page.waitForLoadState('networkidle');
     const year = new Date().getFullYear();
     const nameInput = page.locator(`input[placeholder="Marmelab ${year}"]`);
     await nameInput.click({ clickCount: 3 });
@@ -47,18 +48,22 @@ test.describe('Admin — participants', () => {
 
   test('can toggle the add form', async ({ page }) => {
     await page.goto('/admin/participants');
-    await page.waitForLoadState('networkidle');
-    await page.getByText('+ Ajouter').click();
+    const addButton = page.getByRole('button', { name: '+ Ajouter' });
+    await addButton.waitFor({ state: 'visible' });
+    await addButton.click();
     await expect(page.getByText('Nouveau participant')).toBeVisible();
-    await page.getByText('Annuler').click();
+    await page.getByRole('button', { name: 'Annuler' }).click();
     await expect(page.getByText('Nouveau participant')).not.toBeVisible();
   });
 
   test('shows id preview while typing a name', async ({ page }) => {
     await page.goto('/admin/participants');
-    await page.waitForLoadState('networkidle');
-    await page.getByText('+ Ajouter').click();
-    await page.locator('input[placeholder="Marie Dupont"]').fill('Jean Dupont');
+    const addButton = page.getByRole('button', { name: '+ Ajouter' });
+    await addButton.waitFor({ state: 'visible' });
+    await addButton.click();
+    const nameInput = page.locator('input[placeholder="Marie Dupont"]');
+    await nameInput.waitFor({ state: 'visible' });
+    await nameInput.pressSequentially('Jean Dupont');
     await expect(page.getByText(/id\s*:\s*jeandupont/)).toBeVisible();
   });
 });

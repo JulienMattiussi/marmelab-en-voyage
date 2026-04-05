@@ -1,9 +1,5 @@
-import { readFileSync, writeFileSync, existsSync, readdirSync } from '~/server/utils/fs';
-import { join } from 'node:path';
+import { getStorage } from './storage';
 import type { TripEvent, GlobalParticipant } from '~/types/event';
-
-const eventsDir = () => join(process.cwd(), 'content', 'events');
-const participantsPath = () => join(process.cwd(), 'content', 'participants.json');
 
 const normalizeEvent = (raw: TripEvent): TripEvent => ({
   ...raw,
@@ -11,30 +7,41 @@ const normalizeEvent = (raw: TripEvent): TripEvent => ({
   participants: raw.participants.map((p) => (typeof p === 'string' ? p : (p as { id: string }).id)),
 });
 
-export const readEvent = (slug: string): TripEvent | null => {
-  const path = join(eventsDir(), `${slug}.json`);
-  if (!existsSync(path)) return null;
-  return normalizeEvent(JSON.parse(readFileSync(path, 'utf-8')) as TripEvent);
+export const readEvent = async (slug: string): Promise<TripEvent | null> => {
+  const storage = await getStorage();
+  const content = await storage.readJSON(`events/${slug}.json`);
+  if (!content) return null;
+  return normalizeEvent(JSON.parse(content) as TripEvent);
 };
 
-export const writeEvent = (slug: string, data: TripEvent): void => {
-  writeFileSync(join(eventsDir(), `${slug}.json`), JSON.stringify(data, null, 2), 'utf-8');
+export const writeEvent = async (slug: string, data: TripEvent): Promise<void> => {
+  const storage = await getStorage();
+  await storage.writeJSON(`events/${slug}.json`, JSON.stringify(data, null, 2));
 };
 
-export const listEvents = (): TripEvent[] => {
-  const dir = eventsDir();
-  if (!existsSync(dir)) return [];
-  return (readdirSync(dir) as string[])
-    .filter((f) => f.endsWith('.json'))
-    .map((f) => normalizeEvent(JSON.parse(readFileSync(join(dir, f), 'utf-8')) as TripEvent));
+export const listEvents = async (): Promise<TripEvent[]> => {
+  const storage = await getStorage();
+  const keys = await storage.listJSONKeys('events');
+  const contents = await Promise.all(keys.map((key) => storage.readJSON(key)));
+  return contents
+    .filter((c): c is string => c !== null)
+    .map((c) => normalizeEvent(JSON.parse(c) as TripEvent));
 };
 
-export const readParticipants = (): GlobalParticipant[] => {
-  const path = participantsPath();
-  if (!existsSync(path)) return [];
-  return JSON.parse(readFileSync(path, 'utf-8')) as GlobalParticipant[];
+export const deleteEvent = async (slug: string): Promise<void> => {
+  const storage = await getStorage();
+  await storage.deleteJSON(`events/${slug}.json`);
+  await storage.deleteAssetsByPrefix(`events/${slug}`);
 };
 
-export const writeParticipants = (data: GlobalParticipant[]): void => {
-  writeFileSync(participantsPath(), JSON.stringify(data, null, 2), 'utf-8');
+export const readParticipants = async (): Promise<GlobalParticipant[]> => {
+  const storage = await getStorage();
+  const content = await storage.readJSON('participants.json');
+  if (!content) return [];
+  return JSON.parse(content) as GlobalParticipant[];
+};
+
+export const writeParticipants = async (data: GlobalParticipant[]): Promise<void> => {
+  const storage = await getStorage();
+  await storage.writeJSON('participants.json', JSON.stringify(data, null, 2));
 };

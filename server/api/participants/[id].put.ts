@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<{ name?: string; quote?: string; active?: boolean }>(event);
 
-  const participants = readParticipants();
+  const participants = await readParticipants();
   const participant = participants.find((p) => p.id === id);
   if (!participant) throw createError({ statusCode: 404, message: `Participant "${id}" not found` });
 
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   if (body.quote !== undefined) participant.quote = body.quote;
   if (body.active !== undefined) participant.active = body.active;
 
-  writeParticipants(participants);
+  await writeParticipants(participants);
 
   return participant;
 });

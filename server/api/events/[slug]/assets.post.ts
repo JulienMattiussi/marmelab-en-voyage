@@ -1,13 +1,13 @@
 import { readMultipartFormData } from 'h3';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, extname } from 'path';
+import { extname } from 'node:path';
 import { readEvent, writeEvent } from '~/server/utils/events';
+import { getStorage } from '~/server/utils/storage';
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');
   if (!slug) throw createError({ statusCode: 400, message: 'Missing slug' });
 
-  const existing = readEvent(slug);
+  const existing = await readEvent(slug);
   if (!existing) throw createError({ statusCode: 404, message: `Event "${slug}" not found` });
 
   const formData = await readMultipartFormData(event);
@@ -29,17 +29,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const ext = extname(filePart.filename);
-  const filename = `${field}${ext}`;
-  const dir = join(process.cwd(), 'public', 'events', slug);
+  const contentType = filePart.type ?? 'application/octet-stream';
+  const storage = await getStorage();
+  const url = await storage.putAsset(`events/${slug}/${field}${ext}`, filePart.data, contentType);
 
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, filename), filePart.data);
+  existing.visuals[field] = url;
+  await writeEvent(slug, existing);
 
-  const publicPath = `/events/${slug}/${filename}`;
-
-  // Update the event's visuals reference
-  existing.visuals[field] = publicPath;
-  writeEvent(slug, existing);
-
-  return { path: publicPath };
+  return { path: url };
 });

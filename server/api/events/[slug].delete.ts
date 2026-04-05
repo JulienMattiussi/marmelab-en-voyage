@@ -1,20 +1,12 @@
-import { existsSync, unlinkSync } from '~/server/utils/fs';
-import { join } from 'node:path';
-import { rmSync } from 'node:fs';
+import { readEvent, deleteEvent } from '~/server/utils/events';
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');
   if (!slug) throw createError({ statusCode: 400, message: 'slug is required' });
 
-  const jsonPath = join(process.cwd(), 'content', 'events', `${slug}.json`);
-  if (!existsSync(jsonPath)) throw createError({ statusCode: 404, message: 'Event not found' });
+  if (!(await readEvent(slug))) throw createError({ statusCode: 404, message: 'Event not found' });
 
-  unlinkSync(jsonPath);
-
-  const assetsDir = join(process.cwd(), 'public', 'events', slug);
-  if (existsSync(assetsDir)) {
-    rmSync(assetsDir, { recursive: true });
-  }
+  await deleteEvent(slug);
 
   return { ok: true };
 });
