@@ -149,6 +149,9 @@ make test          # unit + e2e
 - **E2E auth**: all admin E2E tests use the authenticated fixture from `tests/e2e/fixtures.ts`, which calls `POST /api/__test-login` to create a session before each test. That endpoint is disabled in production (`NODE_ENV === 'production'`).
 - **Playwright hydration timing**: in headless mode, clicks can fire before Vue has attached event listeners. Use `await page.waitForLoadState('networkidle')` after navigation on **any page with interactive UI** (buttons, forms) before attempting to click. This applies to all admin pages, not just `/admin/new`.
 - **E2E seed data**: `content/events/belmont-2025.json` is the seed event required by E2E tests — it is the only event file tracked in git (all others are gitignored).
+- **E2E port isolation**: E2E tests run on port 4568 (dev server on 4567). Port is set via `--port 4568` CLI flag in `playwright.config.ts` webServer command — `NUXT_PORT` env var does **not** override `devServer.port` in nuxt.config.ts. The `.env.test` file (loaded via `--dotenv .env.test`) provides test-safe credentials. `.env.test.example` is tracked in git (`.gitignore` exception); `.env.test` is not.
+- **Playwright reporter**: use `[['html', { open: 'never' }]]` — without `open: 'never'`, the HTML reporter opens a browser tab on failure and blocks the terminal.
+- **Fixtures port**: `tests/e2e/fixtures.ts` creates a separate `request.newContext` with an explicit `baseURL` for the `__test-login` call — this must match the E2E port (4568), not the dev port. If the port changes, update it there too.
 
 ## What is and isn't versioned
 
