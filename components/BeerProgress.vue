@@ -8,8 +8,12 @@ const { beers = 0 } = defineProps<{
 
 const showDegrees = useState('beerShowDegrees', () => true);
 
-defineShortcuts({
-  b: () => { showDegrees.value = !showDegrees.value; },
+onMounted(() => {
+  const handler = (e: KeyboardEvent) => {
+    if (e.key === 'b') showDegrees.value = !showDegrees.value;
+  };
+  window.addEventListener('keydown', handler);
+  onUnmounted(() => window.removeEventListener('keydown', handler));
 });
 
 const imageForSlot = (slot: number): string => {

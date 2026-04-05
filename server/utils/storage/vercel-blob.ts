@@ -5,7 +5,7 @@ export class VercelBlobDriver implements StorageDriver {
   async readJSON(key: string): Promise<string | null> {
     const { blobs } = await list({ prefix: key, limit: 1 });
     if (!blobs.length) return null;
-    const res = await fetch(blobs[0].url);
+    const res = await fetch(blobs[0]!.url);
     return res.text();
   }
 
@@ -24,7 +24,7 @@ export class VercelBlobDriver implements StorageDriver {
 
   async deleteJSON(key: string): Promise<void> {
     const { blobs } = await list({ prefix: key, limit: 1 });
-    if (blobs.length) await del(blobs[0].url);
+    if (blobs.length) await del(blobs[0]!.url);
   }
 
   async putAsset(key: string, data: Buffer, contentType: string): Promise<string> {

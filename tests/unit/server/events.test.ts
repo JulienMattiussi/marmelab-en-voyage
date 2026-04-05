@@ -61,7 +61,7 @@ describe('writeEvent', () => {
     vi.mocked(mockStorage.writeJSON).mockResolvedValue(undefined);
     await writeEvent('test-event', mockEvent);
     expect(vi.mocked(mockStorage.writeJSON)).toHaveBeenCalledOnce();
-    const [, content] = vi.mocked(mockStorage.writeJSON).mock.calls[0];
+    const [, content] = vi.mocked(mockStorage.writeJSON).mock.calls[0]!;
     expect(JSON.parse(content)).toEqual(mockEvent);
   });
 });

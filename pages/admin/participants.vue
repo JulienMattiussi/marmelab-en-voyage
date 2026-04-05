@@ -18,8 +18,8 @@ watch(
       if (!cardState[p.id]) {
         cardState[p.id] = { name: p.name, quote: p.quote, saving: false, saved: false };
       } else {
-        cardState[p.id].name = p.name;
-        cardState[p.id].quote = p.quote;
+        cardState[p.id]!.name = p.name;
+        cardState[p.id]!.quote = p.quote;
       }
     }
   },
@@ -28,6 +28,7 @@ watch(
 
 const saveCard = async (id: string) => {
   const state = cardState[id];
+  if (!state) return;
   state.saving = true;
   state.saved = false;
   await $fetch(`/api/participants/${id}`, {
@@ -128,12 +129,12 @@ const submitAdd = async () => {
             </label>
           </div>
           <div class="card-body">
-            <input v-model="cardState[p.id].name" type="text" class="input-name" >
-            <input v-model="cardState[p.id].quote" type="text" class="input-quote" placeholder="Citation…" >
+            <input v-model="cardState[p.id]!.name" type="text" class="input-name" >
+            <input v-model="cardState[p.id]!.quote" type="text" class="input-quote" placeholder="Citation…" >
             <div class="card-actions">
               <button class="btn-disable" @click="toggleActive(p.id, false)">Désactiver</button>
-              <button class="btn-save" :disabled="cardState[p.id].saving" @click="saveCard(p.id)">
-                {{ cardState[p.id].saving ? '…' : cardState[p.id].saved ? '✓ Sauvegardé' : 'Sauvegarder' }}
+              <button class="btn-save" :disabled="cardState[p.id]!.saving" @click="saveCard(p.id)">
+                {{ cardState[p.id]!.saving ? '…' : cardState[p.id]!.saved ? '✓ Sauvegardé' : 'Sauvegarder' }}
               </button>
             </div>
           </div>

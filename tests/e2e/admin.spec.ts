@@ -48,6 +48,7 @@ test.describe('Admin — participants', () => {
 
   test('can toggle the add form', async ({ page }) => {
     await page.goto('/admin/participants');
+    await page.waitForLoadState('networkidle');
     const addButton = page.getByRole('button', { name: '+ Ajouter' });
     await addButton.waitFor({ state: 'visible' });
     await addButton.click();
@@ -58,6 +59,7 @@ test.describe('Admin — participants', () => {
 
   test('shows id preview while typing a name', async ({ page }) => {
     await page.goto('/admin/participants');
+    await page.waitForLoadState('networkidle');
     const addButton = page.getByRole('button', { name: '+ Ajouter' });
     await addButton.waitFor({ state: 'visible' });
     await addButton.click();
