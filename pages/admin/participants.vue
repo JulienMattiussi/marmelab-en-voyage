@@ -97,12 +97,12 @@ const submitAdd = async () => {
       <div class="add-fields">
         <label class="add-field">
           <span>Nom</span>
-          <input v-model="addForm.name" type="text" placeholder="Marie Dupont" autofocus />
+          <input v-model="addForm.name" type="text" placeholder="Marie Dupont" autofocus >
           <small v-if="addForm.name" class="id-preview">id : {{ addId }}</small>
         </label>
         <label class="add-field">
           <span>Citation</span>
-          <input v-model="addForm.quote" type="text" placeholder="Je suis trop content·e !" />
+          <input v-model="addForm.quote" type="text" placeholder="Je suis trop content·e !" >
         </label>
       </div>
       <div v-if="addError" class="alert-error">{{ addError }}</div>
@@ -123,13 +123,13 @@ const submitAdd = async () => {
           <div class="avatar-wrap">
             <NuxtImg :src="p.avatar" :alt="p.name" class="avatar" />
             <label class="avatar-upload" title="Changer l'avatar">
-              <input type="file" accept="image/*" @change="(e) => onAvatarChange(p.id, e as InputEvent)" />
+              <input type="file" accept="image/*" @change="(e) => onAvatarChange(p.id, e as InputEvent)" >
               ✎
             </label>
           </div>
           <div class="card-body">
-            <input v-model="cardState[p.id].name" type="text" class="input-name" />
-            <input v-model="cardState[p.id].quote" type="text" class="input-quote" placeholder="Citation…" />
+            <input v-model="cardState[p.id].name" type="text" class="input-name" >
+            <input v-model="cardState[p.id].quote" type="text" class="input-quote" placeholder="Citation…" >
             <div class="card-actions">
               <button class="btn-disable" @click="toggleActive(p.id, false)">Désactiver</button>
               <button class="btn-save" :disabled="cardState[p.id].saving" @click="saveCard(p.id)">

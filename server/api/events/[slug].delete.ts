@@ -1,4 +1,4 @@
-import { existsSync, unlinkSync, readdirSync } from '~/server/utils/fs';
+import { existsSync, unlinkSync } from '~/server/utils/fs';
 import { join } from 'node:path';
 import { rmSync } from 'node:fs';
 

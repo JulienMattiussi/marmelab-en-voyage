@@ -18,6 +18,15 @@ logs
 .fleet
 .idea
 
+# Event data (runtime content, not versioned)
+content/events/*.json
+!content/events/belmont-2025.json
+public/events/
+
+# Test results
+test-results/
+playwright-report/
+
 # Local env files
 .env
 .env.*

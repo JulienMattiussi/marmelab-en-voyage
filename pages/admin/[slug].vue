@@ -145,15 +145,15 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
         <div class="fields">
           <label class="field">
             <span>Nom de l'événement</span>
-            <input v-model="form.name" type="text" :placeholder="`Marmelab ${currentYear}`" />
+            <input v-model="form.name" type="text" :placeholder="`Marmelab ${currentYear}`" >
           </label>
           <label class="field">
             <span>Slug <small>(URL : /{{ form.slug || 'mon-evenement' }})</small></span>
-            <input v-model="form.slug" type="text" :placeholder="slugify(`Marmelab ${currentYear}`)" :disabled="!isNew" />
+            <input v-model="form.slug" type="text" :placeholder="slugify(`Marmelab ${currentYear}`)" :disabled="!isNew" >
           </label>
           <label class="field full">
             <span>Titre affiché sur la page</span>
-            <input v-model="form.title" type="text" placeholder="Et on est reparti !!!" />
+            <input v-model="form.title" type="text" placeholder="Et on est reparti !!!" >
           </label>
         </div>
       </section>
@@ -163,11 +163,11 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
         <div class="fields">
           <label class="field">
             <span>Départ</span>
-            <input v-model="form.start" type="datetime-local" />
+            <input v-model="form.start" type="datetime-local" >
           </label>
           <label class="field">
             <span>Arrivée</span>
-            <input v-model="form.deadline" type="datetime-local" />
+            <input v-model="form.deadline" type="datetime-local" >
           </label>
         </div>
       </section>
@@ -186,7 +186,7 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
                 accept="image/*"
                 :disabled="isNew"
                 @change="(e) => onFileChange(field, e as InputEvent)"
-              />
+              >
               <span v-if="uploadingField === field" class="uploading">Upload…</span>
               <NuxtImg v-if="form.visuals[field]" :src="form.visuals[field]" class="thumb" />
             </div>
@@ -218,7 +218,7 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
       <section class="card">
         <h2>Publication</h2>
         <label class="toggle-field">
-          <input v-model="form.published" type="checkbox" />
+          <input v-model="form.published" type="checkbox" >
           <span>
             {{ form.published ? "Publié (visible sur la page d'accueil)" : 'Brouillon (non visible)' }}
           </span>

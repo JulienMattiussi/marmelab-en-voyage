@@ -26,8 +26,8 @@ onUnmounted(() => clearTimeout(timer));
     <NuxtImg alt="Transport" src="/assets/bus.png" />
     <div
       v-for="(participant, index) in participants"
-      :key="participant.id"
       v-show="index === currentIndex"
+      :key="participant.id"
       class="speech-bubble"
     >
       <NuxtImg

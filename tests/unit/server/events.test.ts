@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { TripEvent, GlobalParticipant } from '~/types/event';
 
+// These imports resolve AFTER the mock is hoisted, so events.ts gets the mocked fs.
+import { existsSync, readFileSync, writeFileSync, readdirSync } from '~/server/utils/fs';
+import { readEvent, writeEvent, listEvents, readParticipants } from '~/server/utils/events';
+
 // vi.mock is hoisted before imports — it must be declared here.
 vi.mock('~/server/utils/fs', () => ({
   existsSync: vi.fn(),
@@ -8,10 +12,6 @@ vi.mock('~/server/utils/fs', () => ({
   writeFileSync: vi.fn(),
   readdirSync: vi.fn(),
 }));
-
-// These imports resolve AFTER the mock is hoisted, so events.ts gets the mocked fs.
-import { existsSync, readFileSync, writeFileSync, readdirSync } from '~/server/utils/fs';
-import { readEvent, writeEvent, listEvents, readParticipants } from '~/server/utils/events';
 
 const mockEvent: TripEvent = {
   slug: 'test-event',

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Admin — events list', () => {
   test('displays the events admin page', async ({ page }) => {
@@ -21,13 +21,15 @@ test.describe('Admin — events list', () => {
 test.describe('Admin — new event', () => {
   test('auto-generates slug from name', async ({ page }) => {
     await page.goto('/admin/new');
-    await page.fill('input[placeholder="Belmont 2025"]', 'Test Event 2026');
-    await expect(page.locator('input[placeholder="belmont-2025"]')).toHaveValue('test-event-2026');
+    const year = new Date().getFullYear();
+    const nameInput = page.locator(`input[placeholder="Marmelab ${year}"]`);
+    await nameInput.click({ clickCount: 3 });
+    await nameInput.type('Test Event 2026');
+    await expect(page.locator(`input[placeholder="marmelab-${year}"]`)).toHaveValue('test-event-2026');
   });
 
   test('shows the participants grid', async ({ page }) => {
     await page.goto('/admin/new');
-    // Active participants from participants.json should appear
     await expect(page.locator('.participants-grid')).toBeVisible();
   });
 });
@@ -45,17 +47,18 @@ test.describe('Admin — participants', () => {
 
   test('can toggle the add form', async ({ page }) => {
     await page.goto('/admin/participants');
-    const btn = page.getByRole('button', { name: '+ Ajouter' });
-    await btn.click();
+    await page.waitForLoadState('networkidle');
+    await page.getByText('+ Ajouter').click();
     await expect(page.getByText('Nouveau participant')).toBeVisible();
-    await page.getByRole('button', { name: 'Annuler' }).click();
+    await page.getByText('Annuler').click();
     await expect(page.getByText('Nouveau participant')).not.toBeVisible();
   });
 
   test('shows id preview while typing a name', async ({ page }) => {
     await page.goto('/admin/participants');
-    await page.getByRole('button', { name: '+ Ajouter' }).click();
-    await page.fill('input[placeholder="Marie Dupont"]', 'Jean Dupont');
+    await page.waitForLoadState('networkidle');
+    await page.getByText('+ Ajouter').click();
+    await page.locator('input[placeholder="Marie Dupont"]').fill('Jean Dupont');
     await expect(page.getByText(/id\s*:\s*jeandupont/)).toBeVisible();
   });
 });
