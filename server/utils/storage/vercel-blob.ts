@@ -1,12 +1,11 @@
-import { put, list, del } from '@vercel/blob';
+import { put, list, del, get } from '@vercel/blob';
 import type { StorageDriver } from './types';
 
 export class VercelBlobDriver implements StorageDriver {
   async readJSON(key: string): Promise<string | null> {
-    const { blobs } = await list({ prefix: key, limit: 1 });
-    if (!blobs.length) return null;
-    const res = await fetch(blobs[0]!.url);
-    return res.text();
+    const result = await get(key, { access: 'public' });
+    if (!result || result.statusCode !== 200) return null;
+    return new Response(result.stream).text();
   }
 
   async writeJSON(key: string, content: string): Promise<void> {
@@ -24,8 +23,7 @@ export class VercelBlobDriver implements StorageDriver {
   }
 
   async deleteJSON(key: string): Promise<void> {
-    const { blobs } = await list({ prefix: key, limit: 1 });
-    if (blobs.length) await del(blobs[0]!.url);
+    await del(key);
   }
 
   async putAsset(key: string, data: Buffer, contentType: string): Promise<string> {
