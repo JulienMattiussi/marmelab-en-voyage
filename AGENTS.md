@@ -63,6 +63,7 @@ Admin routes (`/admin/*`) are protected by GitHub OAuth via `nuxt-auth-utils`:
 
 **API protection** (`server/middleware/auth.ts`):
 - `GET /api/events/[slug]` and `GET /api/participants` are **public** — used by the event display page.
+- `GET /api/events/published` is **public**: published events only, used by the home page (cached by Vercel for 1 hour, see `routeRules` in `nuxt.config.ts`).
 - `GET /api/events` (list) and all POST/PUT/DELETE routes are **protected** — admin only.
 - Uses `requireUserSession` (not `getUserSession`) to throw a proper 401.
 
@@ -88,6 +89,7 @@ components/
 composables/
   useAppToast.ts          # toast composable: toast.success(msg) / toast.error(msg)
   useCountdown.ts         # Vue composable wrapping countdown math
+  useShareMeta.ts         # Open Graph / Twitter tags for link previews (home and event pages)
 middleware/
   admin.global.ts         # global middleware — redirects unauthenticated users to /login for all /admin/* routes
 pages/
@@ -108,12 +110,11 @@ server/
   utils/storage/          # storage drivers: local (filesystem) and vercel-blob
 scripts/
   seed-blob.mjs           # seed the private Blob store from local content/
-  migrate-json-to-private.mjs  # one-time copy of JSON data from the public to the private store
 tests/
   unit/                   # Vitest unit tests
   e2e/                    # Playwright E2E tests
 utils/
-  constants.ts            # EVENT_LIMIT = 5
+  constants.ts            # EVENT_LIMIT = 5, SITE_NAME
   countdownMath.ts        # pure math: computeProgress, splitDuration, beerCount, padTime
   error.ts                # extractErrorMessage(e, fallback) — shared error extraction for $fetch catch blocks
   slugify.ts              # shared slug/ID generation

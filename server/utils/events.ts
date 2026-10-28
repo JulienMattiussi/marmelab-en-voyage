@@ -20,10 +20,10 @@ export const writeEvent = async (slug: string, data: TripEvent): Promise<void> =
   await storage.writeJSON(`events/${slug}.json`, JSON.stringify(data, null, 2));
 };
 
-export const listEvents = async (): Promise<TripEvent[]> => {
+export const listEvents = async (options?: ReadOptions): Promise<TripEvent[]> => {
   const storage = await getStorage();
   const keys = await storage.listJSONKeys('events');
-  const contents = await Promise.all(keys.map((key) => storage.readJSON(key)));
+  const contents = await Promise.all(keys.map((key) => storage.readJSON(key, options)));
   return contents
     .filter((c): c is string => c !== null)
     .map((c) => normalizeEvent(JSON.parse(c) as TripEvent));

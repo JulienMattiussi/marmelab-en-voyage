@@ -79,6 +79,13 @@ describe('listEvents', () => {
     expect(events).toHaveLength(1);
     expect(events[0]).toEqual(mockEvent);
   });
+
+  it('passes read options to every event read', async () => {
+    vi.mocked(mockStorage.listJSONKeys).mockResolvedValue(['events/test-event.json']);
+    vi.mocked(mockStorage.readJSON).mockResolvedValue(JSON.stringify(mockEvent));
+    await listEvents({ cached: true });
+    expect(mockStorage.readJSON).toHaveBeenCalledWith('events/test-event.json', { cached: true });
+  });
 });
 
 describe('readParticipants', () => {

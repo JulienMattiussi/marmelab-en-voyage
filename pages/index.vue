@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import type { TripEvent } from '~/types/event';
 
-const { data: events } = await useFetch<TripEvent[]>('/api/events');
-const published = computed(() => (events.value ?? []).filter((e) => e.published));
+const { data: events } = await useFetch<TripEvent[]>('/api/events/published');
+const published = computed(() => events.value ?? []);
+
+useShareMeta({
+  title: SITE_NAME,
+  description: 'Le compte à rebours des voyages Marmelab',
+  image: '/assets/back.png',
+  path: '/',
+});
 </script>
 
 <template>

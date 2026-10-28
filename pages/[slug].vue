@@ -19,21 +19,11 @@ if (fetchError) {
   );
 }
 
-const { origin } = useRequestURL();
-
-const ogImage = computed(() => {
-  const src = event.value?.visuals.goal || event.value?.visuals.background || '/assets/goal.png';
-  return src.startsWith('http') ? src : `${origin}${src}`;
-});
-
-useSeoMeta({
+useShareMeta({
   title: () => event.value?.name ?? '',
-  ogTitle: () => event.value?.name ?? '',
-  ogDescription: () => event.value?.title ?? '',
-  ogImage,
-  ogUrl: `${origin}/${slug}`,
-  ogType: 'website',
-  twitterCard: 'summary_large_image',
+  description: () => event.value?.title ?? '',
+  image: () => event.value?.visuals.goal || event.value?.visuals.background || '/assets/goal.png',
+  path: `/${slug}`,
 });
 </script>
 
