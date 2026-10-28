@@ -23,6 +23,13 @@ There is **no database**. All data is stored as JSON files in `content/`:
 
 Images are stored in `public/events/<slug>/` (event visuals) and `public/avatars/` (participant avatars).
 
+The layout above is the `local` storage driver (default, used in dev and tests). In production on Vercel, `STORAGE_DRIVER=vercel-blob` uses two Blob stores (`server/utils/storage/vercel-blob.ts`):
+
+- **Private store** (`BLOB_DATA_READ_WRITE_TOKEN`): the JSON data. Reads bypass the CDN cache by default, so the admin and every read-before-write see the latest version. Public pages pass `{ cached: true }` (via `readOptionsFor(event)` in `server/utils/readOptions.ts`) and may get a copy up to ~60s old, which keeps Blob operations within the Hobby quota.
+- **Public store** (`BLOB_READ_WRITE_TOKEN`): the images, linked directly from pages.
+- Tokens are always passed explicitly: the SDK would otherwise prefer `BLOB_STORE_ID` (added by Vercel when connecting a store) over `BLOB_READ_WRITE_TOKEN`.
+- Transient read failures are retried, then surface as a 503 that the admin pages display.
+
 ## Core types (`types/event.ts`)
 
 ```ts
@@ -97,6 +104,11 @@ server/
   middleware/auth.ts      # server middleware — enforces auth on protected API routes
   utils/events.ts         # read/write/list/normalize events and participants
   utils/fs.ts             # thin re-export of node:fs (allows mocking in tests)
+  utils/readOptions.ts    # cached reads for public visitors, fresh reads for the admin
+  utils/storage/          # storage drivers: local (filesystem) and vercel-blob
+scripts/
+  seed-blob.mjs           # seed the private Blob store from local content/
+  migrate-json-to-private.mjs  # one-time copy of JSON data from the public to the private store
 tests/
   unit/                   # Vitest unit tests
   e2e/                    # Playwright E2E tests

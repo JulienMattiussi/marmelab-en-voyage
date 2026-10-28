@@ -12,7 +12,7 @@ A Nuxt 4 web application for Marmelab team trips. Each trip gets a public page w
 - **TypeScript** — strict
 - **yarn** — package manager
 - **nuxt-auth-utils** — GitHub OAuth session management
-- **@vercel/blob** — asset and JSON storage for Vercel deployments
+- **@vercel/blob**: storage for Vercel deployments (private store for JSON data, public store for images)
 - **Vitest** — unit tests
 - **Playwright** — E2E tests
 
@@ -30,7 +30,8 @@ NUXT_OAUTH_GITHUB_CLIENT_ID=  # from your GitHub OAuth App
 NUXT_OAUTH_GITHUB_CLIENT_SECRET=
 GITHUB_ALLOWED_LOGIN=         # exact GitHub username allowed to access /admin
 STORAGE_DRIVER=local          # or 'vercel-blob' for Vercel deployments
-BLOB_READ_WRITE_TOKEN=        # required when STORAGE_DRIVER=vercel-blob
+BLOB_READ_WRITE_TOKEN=        # public Blob store (images), required when STORAGE_DRIVER=vercel-blob
+BLOB_DATA_READ_WRITE_TOKEN=   # private Blob store (JSON data), required when STORAGE_DRIVER=vercel-blob
 ```
 
 The GitHub OAuth callback URL to register: `https://<your-domain>/auth/github`

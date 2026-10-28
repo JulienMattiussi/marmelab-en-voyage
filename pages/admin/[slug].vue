@@ -6,11 +6,14 @@ const router = useRouter();
 const urlSlug = route.params.slug as string;
 const isNew = urlSlug === 'new';
 
-const { data: globalParticipants } = await useFetch<GlobalParticipant[]>('/api/participants');
+const { data: globalParticipants, error: participantsError } = await useFetch<GlobalParticipant[]>('/api/participants');
 
-const { data: existingEvent } = isNew
-  ? { data: ref<TripEvent | null>(null) }
+const { data: existingEvent, error: eventError } = isNew
+  ? { data: ref<TripEvent | null>(null), error: ref(null) }
   : await useFetch<TripEvent>(`/api/events/${urlSlug}`);
+
+// Hide the form when loading failed: saving a blank form would overwrite the event.
+const loadError = computed(() => loadErrorMessage(eventError.value, participantsError.value));
 
 const currentYear = new Date().getFullYear();
 
@@ -56,6 +59,7 @@ const deleteEvent = async () => {
   deleting.value = true;
   try {
     await $fetch(`/api/events/${urlSlug}`, { method: 'DELETE' });
+    toast.success('Événement supprimé');
     await router.push('/admin');
   } catch (e: unknown) {
     saveError.value = extractErrorMessage(e, 'Erreur lors de la suppression');
@@ -75,6 +79,7 @@ const save = async () => {
   try {
     if (isNew) {
       await $fetch('/api/events', { method: 'POST', body: form });
+      toast.success('Événement créé');
       await router.push(`/admin/${form.slug}`);
     } else {
       await $fetch(`/api/events/${urlSlug}`, { method: 'PUT', body: form });
@@ -127,112 +132,116 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
         <NuxtLink v-if="!isNew" :to="`/${urlSlug}`" target="_blank" class="btn-preview">
           Aperçu ↗
         </NuxtLink>
-        <button class="btn-primary" :disabled="saving" @click="save">
+        <button v-if="!loadError" class="btn-primary" :disabled="saving" @click="save">
           {{ saving ? 'Sauvegarde…' : isNew ? 'Créer' : 'Sauvegarder' }}
         </button>
       </div>
     </div>
 
-    <div v-if="saveError" class="alert-error">{{ saveError }}</div>
+    <div v-if="loadError" class="alert-error">{{ loadError }}</div>
 
-    <div class="sections">
+    <template v-else>
+      <div v-if="saveError" class="alert-error">{{ saveError }}</div>
 
-      <section class="card">
-        <h2>Informations générales</h2>
-        <div class="fields">
-          <label class="field">
-            <span>Nom de l'événement</span>
-            <input v-model="form.name" type="text" :placeholder="`Marmelab ${currentYear}`" >
-          </label>
-          <label class="field">
-            <span>Slug <small>(URL : /{{ form.slug || 'mon-evenement' }})</small></span>
-            <input v-model="form.slug" type="text" :placeholder="slugify(`Marmelab ${currentYear}`)" :disabled="!isNew" >
-          </label>
-          <label class="field full">
-            <span>Titre affiché sur la page</span>
-            <input v-model="form.title" type="text" placeholder="Et on est reparti !!!" >
-          </label>
-        </div>
-      </section>
+      <div class="sections">
 
-      <section class="card">
-        <h2>Dates</h2>
-        <div class="fields">
-          <label class="field">
-            <span>Départ</span>
-            <input v-model="form.start" type="datetime-local" >
-          </label>
-          <label class="field">
-            <span>Arrivée</span>
-            <input v-model="form.deadline" type="datetime-local" >
-          </label>
-        </div>
-      </section>
+        <section class="card">
+          <h2>Informations générales</h2>
+          <div class="fields">
+            <label class="field">
+              <span>Nom de l'événement</span>
+              <input v-model="form.name" type="text" :placeholder="`Marmelab ${currentYear}`" >
+            </label>
+            <label class="field">
+              <span>Slug <small>(URL : /{{ form.slug || 'mon-evenement' }})</small></span>
+              <input v-model="form.slug" type="text" :placeholder="slugify(`Marmelab ${currentYear}`)" :disabled="!isNew" >
+            </label>
+            <label class="field full">
+              <span>Titre affiché sur la page</span>
+              <input v-model="form.title" type="text" placeholder="Et on est reparti !!!" >
+            </label>
+          </div>
+        </section>
 
-      <section class="card">
-        <h2>Visuels</h2>
-        <p v-if="isNew" class="info-notice">
-          Sauvegardez d'abord l'événement pour pouvoir uploader des images.
-        </p>
-        <div class="fields">
-          <div v-for="field in (['background', 'goal'] as const)" :key="field" class="field">
-            <span>{{ field === 'background' ? 'Image de fond' : 'Image destination' }}</span>
-            <div class="upload-row">
-              <input
-                type="file"
-                accept="image/*"
-                :disabled="isNew"
-                @change="(e) => onFileChange(field, e as InputEvent)"
-              >
-              <span v-if="uploadingField === field" class="uploading">Upload…</span>
-              <NuxtImg v-if="form.visuals[field]" :src="form.visuals[field]" class="thumb" />
+        <section class="card">
+          <h2>Dates</h2>
+          <div class="fields">
+            <label class="field">
+              <span>Départ</span>
+              <input v-model="form.start" type="datetime-local" >
+            </label>
+            <label class="field">
+              <span>Arrivée</span>
+              <input v-model="form.deadline" type="datetime-local" >
+            </label>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Visuels</h2>
+          <p v-if="isNew" class="info-notice">
+            Sauvegardez d'abord l'événement pour pouvoir uploader des images.
+          </p>
+          <div class="fields">
+            <div v-for="field in (['background', 'goal'] as const)" :key="field" class="field">
+              <span>{{ field === 'background' ? 'Image de fond' : 'Image destination' }}</span>
+              <div class="upload-row">
+                <input
+                  type="file"
+                  accept="image/*"
+                  :disabled="isNew"
+                  @change="(e) => onFileChange(field, e as InputEvent)"
+                >
+                <span v-if="uploadingField === field" class="uploading">Upload…</span>
+                <NuxtImg v-if="form.visuals[field]" :src="form.visuals[field]" class="thumb" />
+              </div>
             </div>
           </div>
-        </div>
-        <div v-if="uploadError" class="alert-error">{{ uploadError }}</div>
-      </section>
+          <div v-if="uploadError" class="alert-error">{{ uploadError }}</div>
+        </section>
 
-      <section class="card">
-        <h2>
-          Participants <small>({{ form.participants.length }} sélectionnés)</small>
-          <NuxtLink to="/admin/participants" class="manage-link">Gérer les participants ↗</NuxtLink>
-        </h2>
-        <div class="participants-grid">
-          <div
-            v-for="p in activeParticipants"
-            :key="p.id"
-            :class="['participant-card', { selected: isSelected(p.id) }]"
-            @click="toggleParticipant(p.id)"
-          >
-            <NuxtImg :src="p.avatar" :alt="p.name" class="participant-avatar" />
-            <span class="participant-name">{{ p.name }}</span>
-            <span class="participant-check">{{ isSelected(p.id) ? '✓' : '+' }}</span>
-            <p v-if="isSelected(p.id)" class="participant-quote">{{ p.quote }}</p>
+        <section class="card">
+          <h2>
+            Participants <small>({{ form.participants.length }} sélectionnés)</small>
+            <NuxtLink to="/admin/participants" class="manage-link">Gérer les participants ↗</NuxtLink>
+          </h2>
+          <div class="participants-grid">
+            <div
+              v-for="p in activeParticipants"
+              :key="p.id"
+              :class="['participant-card', { selected: isSelected(p.id) }]"
+              @click="toggleParticipant(p.id)"
+            >
+              <NuxtImg :src="p.avatar" :alt="p.name" class="participant-avatar" />
+              <span class="participant-name">{{ p.name }}</span>
+              <span class="participant-check">{{ isSelected(p.id) ? '✓' : '+' }}</span>
+              <p v-if="isSelected(p.id)" class="participant-quote">{{ p.quote }}</p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="card">
-        <h2>Publication</h2>
-        <label class="toggle-field">
-          <input v-model="form.published" type="checkbox" >
-          <span>
-            {{ form.published ? "Publié (visible sur la page d'accueil)" : 'Brouillon (non visible)' }}
-          </span>
-        </label>
-      </section>
+        <section class="card">
+          <h2>Publication</h2>
+          <label class="toggle-field">
+            <input v-model="form.published" type="checkbox" >
+            <span>
+              {{ form.published ? "Publié (visible sur la page d'accueil)" : 'Brouillon (non visible)' }}
+            </span>
+          </label>
+        </section>
 
-    </div>
+      </div>
 
-    <div class="footer-actions">
-      <div v-if="saveError" class="alert-error">{{ saveError }}</div>
-      <button class="btn-primary" :disabled="saving" @click="save">
-        {{ saving ? 'Sauvegarde…' : isNew ? "Créer l'événement" : 'Sauvegarder' }}
-      </button>
-      <button v-if="!isNew" class="btn-delete" :disabled="deleting" @click="deleteEvent">
-        {{ deleting ? '…' : 'Supprimer' }}
-      </button>
-    </div>
+      <div class="footer-actions">
+        <div v-if="saveError" class="alert-error">{{ saveError }}</div>
+        <button class="btn-primary" :disabled="saving" @click="save">
+          {{ saving ? 'Sauvegarde…' : isNew ? "Créer l'événement" : 'Sauvegarder' }}
+        </button>
+        <button v-if="!isNew" class="btn-delete" :disabled="deleting" @click="deleteEvent">
+          {{ deleting ? '…' : 'Supprimer' }}
+        </button>
+      </div>
+    </template>
   </div>
 </template>
 

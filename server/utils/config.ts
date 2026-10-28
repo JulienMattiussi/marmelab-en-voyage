@@ -19,6 +19,20 @@ const config = convict({
     default: 'local' as 'local' | 'vercel-blob',
     env: 'STORAGE_DRIVER',
   },
+  blobAssetsToken: {
+    doc: 'Read-write token of the public Blob store holding images (vercel-blob driver)',
+    format: String,
+    default: '',
+    env: 'BLOB_READ_WRITE_TOKEN',
+    sensitive: true,
+  },
+  blobDataToken: {
+    doc: 'Read-write token of the private Blob store holding JSON data (vercel-blob driver)',
+    format: String,
+    default: '',
+    env: 'BLOB_DATA_READ_WRITE_TOKEN',
+    sensitive: true,
+  },
 });
 
 config.validate({ allowed: 'strict' });

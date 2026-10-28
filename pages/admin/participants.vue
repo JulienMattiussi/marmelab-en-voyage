@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import type { GlobalParticipant } from '~/types/event';
 
-const { data: participants, refresh } = await useFetch<GlobalParticipant[]>('/api/participants');
+const { data: participants, error } = await useFetch<GlobalParticipant[]>('/api/participants');
+const loadError = computed(() => loadErrorMessage(error.value));
+const toast = useAppToast();
+
+// Apply the server's answer instead of refetching the whole list.
+const updateParticipant = (id: string, changes: Partial<GlobalParticipant>) => {
+  participants.value = (participants.value ?? []).map((p) => (p.id === id ? { ...p, ...changes } : p));
+};
 
 const activeList = computed(() => (participants.value ?? []).filter((p) => p.active));
 const inactiveList = computed(() => (participants.value ?? []).filter((p) => !p.active));
@@ -31,26 +38,42 @@ const saveCard = async (id: string) => {
   if (!state) return;
   state.saving = true;
   state.saved = false;
-  await $fetch(`/api/participants/${id}`, {
-    method: 'PUT',
-    body: { name: state.name, quote: state.quote },
-  });
-  state.saving = false;
-  state.saved = true;
-  await refresh();
-  setTimeout(() => { state.saved = false; }, 2_000);
+  try {
+    const updated = await $fetch<GlobalParticipant>(`/api/participants/${id}`, {
+      method: 'PUT',
+      body: { name: state.name, quote: state.quote },
+    });
+    updateParticipant(id, updated);
+    toast.success(`Participant sauvegardé : ${updated.name}`);
+    state.saved = true;
+    setTimeout(() => { state.saved = false; }, 2_000);
+  } catch (e: unknown) {
+    toast.error(extractErrorMessage(e, 'Erreur lors de la sauvegarde'));
+  } finally {
+    state.saving = false;
+  }
 };
 
 const toggleActive = async (id: string, active: boolean) => {
-  await $fetch(`/api/participants/${id}`, { method: 'PUT', body: { active } });
-  await refresh();
+  try {
+    const updated = await $fetch<GlobalParticipant>(`/api/participants/${id}`, { method: 'PUT', body: { active } });
+    updateParticipant(id, updated);
+    toast.success(`Participant ${active ? 'réactivé' : 'désactivé'} : ${updated.name}`);
+  } catch (e: unknown) {
+    toast.error(extractErrorMessage(e, 'Erreur lors de la mise à jour'));
+  }
 };
 
 const uploadAvatar = async (id: string, file: File) => {
   const fd = new FormData();
   fd.append('file', file);
-  await $fetch(`/api/participants/${id}/avatar`, { method: 'POST', body: fd });
-  await refresh();
+  try {
+    const { path } = await $fetch<{ path: string }>(`/api/participants/${id}/avatar`, { method: 'POST', body: fd });
+    updateParticipant(id, { avatar: path });
+    toast.success('Avatar mis à jour');
+  } catch (e: unknown) {
+    toast.error(extractErrorMessage(e, 'Erreur upload'));
+  }
 };
 
 const onAvatarChange = (id: string, e: InputEvent) => {
@@ -70,11 +93,15 @@ const submitAdd = async () => {
   addError.value = '';
   adding.value = true;
   try {
-    await $fetch('/api/participants', { method: 'POST', body: { name: addForm.name, quote: addForm.quote } });
+    const created = await $fetch<GlobalParticipant>('/api/participants', {
+      method: 'POST',
+      body: { name: addForm.name, quote: addForm.quote },
+    });
+    participants.value = [...(participants.value ?? []), created];
+    toast.success(`Participant ajouté : ${created.name}`);
     addForm.name = '';
     addForm.quote = '';
     showAddForm.value = false;
-    await refresh();
   } catch (e: unknown) {
     addError.value = extractErrorMessage(e);
   } finally {
@@ -115,7 +142,9 @@ const submitAdd = async () => {
       </div>
     </div>
 
-    <section>
+    <div v-if="loadError" class="alert-error">{{ loadError }}</div>
+
+    <section v-else>
       <h2 class="section-title">
         Actifs <span class="count-badge">{{ activeList.length }}</span>
       </h2>
@@ -142,7 +171,7 @@ const submitAdd = async () => {
       </div>
     </section>
 
-    <section v-if="inactiveList.length > 0" class="inactive-section">
+    <section v-if="!loadError && inactiveList.length > 0" class="inactive-section">
       <h2 class="section-title">
         Désactivés <span class="count-badge">{{ inactiveList.length }}</span>
         <small>(non disponibles dans les événements)</small>

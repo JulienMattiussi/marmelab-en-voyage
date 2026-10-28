@@ -1,4 +1,5 @@
 import { getStorage } from './storage';
+import type { ReadOptions } from './storage/types';
 import type { TripEvent, GlobalParticipant } from '~/types/event';
 
 const normalizeEvent = (raw: TripEvent): TripEvent => ({
@@ -7,9 +8,9 @@ const normalizeEvent = (raw: TripEvent): TripEvent => ({
   participants: raw.participants.map((p) => (typeof p === 'string' ? p : (p as { id: string }).id)),
 });
 
-export const readEvent = async (slug: string): Promise<TripEvent | null> => {
+export const readEvent = async (slug: string, options?: ReadOptions): Promise<TripEvent | null> => {
   const storage = await getStorage();
-  const content = await storage.readJSON(`events/${slug}.json`);
+  const content = await storage.readJSON(`events/${slug}.json`, options);
   if (!content) return null;
   return normalizeEvent(JSON.parse(content) as TripEvent);
 };
@@ -34,9 +35,9 @@ export const deleteEvent = async (slug: string): Promise<void> => {
   await storage.deleteAssetsByPrefix(`events/${slug}`);
 };
 
-export const readParticipants = async (): Promise<GlobalParticipant[]> => {
+export const readParticipants = async (options?: ReadOptions): Promise<GlobalParticipant[]> => {
   const storage = await getStorage();
-  const content = await storage.readJSON('participants.json');
+  const content = await storage.readJSON('participants.json', options);
   if (!content) return [];
   return JSON.parse(content) as GlobalParticipant[];
 };

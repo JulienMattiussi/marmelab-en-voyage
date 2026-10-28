@@ -8,5 +8,8 @@
       "Bash(npx playwright*)",
       "Bash(yarn vitest*)"
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0"
   }
 }

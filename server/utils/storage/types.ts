@@ -1,6 +1,12 @@
+export type ReadOptions = {
+  // Accept a copy up to ~60s old from the CDN cache. Only for public pages:
+  // the admin and every read-before-write need the latest version.
+  cached?: boolean;
+};
+
 export interface StorageDriver {
   // JSON documents — keys are relative paths like 'events/my-event.json' or 'participants.json'
-  readJSON(key: string): Promise<string | null>;
+  readJSON(key: string, options?: ReadOptions): Promise<string | null>;
   writeJSON(key: string, content: string): Promise<void>;
   listJSONKeys(prefix: string): Promise<string[]>;
   deleteJSON(key: string): Promise<void>;

@@ -4,8 +4,10 @@ import type { TripEvent, GlobalParticipant } from '~/types/event';
 const { clear: clearSession } = useUserSession();
 const logout = async () => { await clearSession(); await navigateTo('/login'); };
 
-const { data: events, refresh } = await useFetch<TripEvent[]>('/api/events');
-const { data: participants } = await useFetch<GlobalParticipant[]>('/api/participants');
+const { data: events, error: eventsError } = await useFetch<TripEvent[]>('/api/events');
+const { data: participants, error: participantsError } = await useFetch<GlobalParticipant[]>('/api/participants');
+
+const loadError = computed(() => loadErrorMessage(eventsError.value, participantsError.value));
 
 const activeIds = computed(() => new Set((participants.value ?? []).filter((p) => p.active).map((p) => p.id)));
 
@@ -22,6 +24,7 @@ const sorted = computed(() =>
 
 const atLimit = computed(() => (events.value?.length ?? 0) >= EVENT_LIMIT);
 
+const toast = useAppToast();
 const deleteError = ref('');
 const deleting = ref<string | null>(null);
 
@@ -31,7 +34,9 @@ const deleteEvent = async (slug: string) => {
   deleteError.value = '';
   try {
     await $fetch(`/api/events/${slug}`, { method: 'DELETE' });
-    await refresh();
+    // Remove locally instead of refetching the whole list.
+    events.value = (events.value ?? []).filter((e) => e.slug !== slug);
+    toast.success('Événement supprimé');
   } catch (e: unknown) {
     deleteError.value = extractErrorMessage(e, 'Erreur lors de la suppression');
   } finally {
@@ -55,7 +60,9 @@ const deleteEvent = async (slug: string) => {
 
     <div v-if="deleteError" class="alert-error">{{ deleteError }}</div>
 
-    <div v-if="sorted.length === 0" class="empty">
+    <div v-if="loadError" class="alert-error">{{ loadError }}</div>
+
+    <div v-else-if="sorted.length === 0" class="empty">
       Aucun événement. <NuxtLink to="/admin/new">Créer le premier</NuxtLink>
     </div>
 
