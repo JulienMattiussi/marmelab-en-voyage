@@ -1,6 +1,7 @@
 import { readMultipartFormData } from 'h3';
 import { extname } from 'node:path';
-import { readEvent, writeEvent } from '~/server/utils/events';
+import { readEvent } from '~/server/utils/events';
+import { writeEventWithPreview } from '~/server/utils/eventPreview';
 import { getStorage } from '~/server/utils/storage';
 
 export default defineEventHandler(async (event) => {
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
   const url = await storage.putAsset(`events/${slug}/${field}${ext}`, filePart.data, contentType);
 
   existing.visuals[field] = url;
-  await writeEvent(slug, existing);
+  await writeEventWithPreview(event, existing);
 
   return { path: url };
 });

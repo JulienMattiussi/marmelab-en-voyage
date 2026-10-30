@@ -1,0 +1,15 @@
+/* Shared styles of the public pages (home, event), imported globally in nuxt.config.ts. */
+
+/* Sticker look: paper card, ink border, hard offset shadow. */
+.sticker {
+  background: var(--public-paper);
+  border: var(--public-border);
+  border-radius: var(--public-radius);
+  box-shadow: var(--public-shadow);
+}
+
+/* Bigger cards (countdown tiles, home event cards). */
+.sticker--bold {
+  border: var(--public-border-thick);
+  box-shadow: var(--public-shadow-lg);
+}

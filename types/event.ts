@@ -26,6 +26,8 @@ export type TripEvent = {
   visuals: EventVisuals;
   /** Ordered list of participant IDs for this event */
   participants: string[];
+  /** Link-preview image (1200×630), regenerated on every save. Missing on events not saved since. */
+  ogImage?: string;
 };
 
 /** A participant as needed by the transport vehicle component */

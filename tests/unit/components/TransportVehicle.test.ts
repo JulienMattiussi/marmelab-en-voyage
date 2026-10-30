@@ -29,14 +29,19 @@ describe('TransportVehicle', () => {
     expect(wrapper.text()).toContain('Hello world!');
   });
 
-  it('applies the correct position via margin-left style', () => {
+  it('places the bus and the bubble at the given position', () => {
     const wrapper = mountVehicle({ position: 50 });
-    expect(wrapper.find('.vehicle').attributes('style')).toContain('calc(50% - 100px)');
+    expect(wrapper.find('.vehicle').attributes('style')).toContain('--position: 50%');
   });
 
   it('defaults position to 0 when not provided', () => {
     const wrapper = mountVehicle();
-    expect(wrapper.find('.vehicle').attributes('style')).toContain('calc(0% - 100px)');
+    expect(wrapper.find('.vehicle').attributes('style')).toContain('--position: 0%');
+  });
+
+  it('shows the avatar of the participant who speaks', () => {
+    const wrapper = mountVehicle();
+    expect(wrapper.find('.speech-bubble img').attributes('src')).toBe('/avatars/alice.png');
   });
 
   it('rotates to the next participant after 3 seconds', async () => {

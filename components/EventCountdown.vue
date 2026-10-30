@@ -1,149 +1,90 @@
 <script setup lang="ts">
-import { padTime } from '~/utils/countdownMath';
-import type { TransportParticipant } from '~/types/event';
+import { padTime, type TimeComponents } from '~/utils/countdownMath';
 
-const { start, deadline, goalImage, participants } = defineProps<{
-  start: string;
-  deadline: string;
-  goalImage: string;
-  participants: TransportParticipant[];
+const { time } = defineProps<{
+  /** Remaining time, from useCountdown. */
+  time: TimeComponents;
 }>();
 
-const { time, progress, beers } = useCountdown(start, deadline);
+const plural = (word: string, value: number) => (value > 1 ? `${word}s` : word);
 
-const reached = computed(() => ({
-  days: time.value.days === 0,
-  hours: time.value.days === 0 && time.value.hours === 0,
-  minutes: time.value.days === 0 && time.value.hours === 0 && time.value.minutes === 0,
-  seconds: time.value.days === 0 && time.value.hours === 0 && time.value.minutes === 0 && time.value.seconds === 0,
-}));
+// A unit is "reached" once it and every larger unit are down to zero: its tile turns green.
+const tiles = computed(() => {
+  const { days, hours, minutes, seconds } = time;
+  return [
+    { key: 'days', value: String(days), label: plural('jour', days), reached: days === 0 },
+    { key: 'hours', value: padTime(hours), label: plural('heure', hours), reached: days + hours === 0 },
+    { key: 'minutes', value: padTime(minutes), label: plural('minute', minutes), reached: days + hours + minutes === 0 },
+    { key: 'seconds', value: padTime(seconds), label: plural('seconde', seconds), reached: days + hours + minutes + seconds === 0 },
+  ];
+});
 </script>
 
 <template>
-  <div class="countdown-wrapper">
-    <div class="countdown">
-      <BeerProgress :beers="beers" />
-      <h3>Temps restant avant la fiesta :</h3>
-      <table>
-        <tbody>
-          <tr class="numbers">
-            <td class="spacer" />
-            <td :class="{ reached: reached.days }" class="days">{{ time.days }}</td>
-            <td :class="{ reached: reached.hours }">{{ time.hours }}</td>
-            <td :class="{ reached: reached.minutes }">{{ padTime(time.minutes) }}</td>
-            <td :class="{ reached: reached.seconds }">{{ padTime(time.seconds) }}</td>
-            <td class="spacer" />
-          </tr>
-          <tr class="labels">
-            <td class="spacer" />
-            <td>jour{{ time.days > 1 ? 's' : '' }}</td>
-            <td>heure{{ time.hours > 1 ? 's' : '' }}</td>
-            <td>minute{{ time.minutes > 1 ? 's' : '' }}</td>
-            <td>seconde{{ time.seconds > 1 ? 's' : '' }}</td>
-            <td class="spacer" />
-          </tr>
-          <tr>
-            <td class="road-cell" colspan="6">
-              <TransportVehicle :position="progress" :participants="participants" class="vehicle" />
-              <NuxtImg class="road" alt="Road" src="/assets/road.jpg" />
-              <NuxtImg class="goal" alt="Destination" :src="goalImage" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="countdown" role="timer" aria-live="off">
+    <div
+      v-for="tile in tiles"
+      :key="tile.key"
+      :class="['tile', 'sticker', 'sticker--bold', `tile--${tile.key}`, { 'tile--reached': tile.reached }]"
+    >
+      <span class="tile-value">{{ tile.value }}</span>
+      <span class="tile-label">{{ tile.label }}</span>
     </div>
   </div>
 </template>
 
 <style scoped>
-.countdown-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin: 10px 0 0;
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
 }
 
-.countdown {
+.tile {
   display: flex;
   flex-direction: column;
-  width: 700px;
+  align-items: flex-start;
+  padding: 14px 22px;
 }
 
-.numbers {
-  font-size: 60px;
-  color: var(--color-countdown-numbers);
-  vertical-align: bottom;
+.tile--days {
+  background: var(--color-countdown-days);
 }
 
-.reached {
-  color: var(--color-countdown-reached);
+.tile--reached {
+  background: var(--color-countdown-reached);
 }
 
-@media (max-width: 1250px) {
-  .numbers {
-    font-size: 45px;
-  }
+.tile-value {
+  font-family: var(--public-font-display);
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
-.labels {
-  font-size: 20px;
+.tile-label {
+  font-size: 1rem;
+  font-weight: 700;
 }
 
-.days {
-  font-size: 100px;
-  color: var(--color-countdown-days);
-  vertical-align: bottom;
-  line-height: 100px;
-}
-
-.road-cell {
-  position: relative;
-}
-
-img.road {
-  margin-top: 50px;
-  height: 50px;
-  width: 100%;
-}
-
-.vehicle {
-  left: 0;
-}
-
-@media (max-width: 1250px) {
-  .vehicle {
-    left: 50px;
+@media (max-width: 760px) {
+  .countdown {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
 
-  img.road {
-    margin-left: -10px;
-    width: calc(100% + 20px);
+  .tile {
+    padding: 10px 16px;
+    box-shadow: var(--public-shadow);
   }
-}
 
-img.goal {
-  height: 130px;
-  margin-top: -5px;
-  margin-left: -80px;
-  position: absolute;
-}
-
-@media (max-width: 1250px) {
-  img.goal {
-    right: 0;
-    margin-top: -110px;
-    margin-left: unset;
-    margin-right: -50px;
+  .tile-value {
+    font-size: 3.25rem;
   }
-}
 
-.spacer {
-  width: 100px;
-}
-
-@media (max-width: 1250px) {
-  .spacer {
-    width: 0;
+  .tile-label {
+    font-size: 0.875rem;
   }
 }
 </style>

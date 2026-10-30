@@ -1,8 +1,10 @@
 # Marmelab en Voyage
 
-A Nuxt 4 web application for Marmelab team trips. Each trip gets a public page with a countdown to departure, a beer-progress bar, and an animated transport vehicle showing participant speech bubbles. An admin CMS at `/admin` lets the team manage events and participants.
+A Nuxt 4 web application for Marmelab team trips. Each trip gets a public page with a countdown to the rendez-vous, a beer-progress bar, and an animated transport vehicle showing participant speech bubbles. An admin CMS at `/admin` lets the team manage events and participants.
 
-- Public event pages at `/<slug>` — countdown, beer-progress bar, transport vehicle with participant speech bubbles
+- Home page at `/`: the published events
+- Public event pages at `/<slug>`: countdown, beer-progress bar, transport vehicle with participant speech bubbles
+- Link previews: saving an event in the admin draws its 1200×630 preview image (title, rendez-vous date, road and bus), shown when the link is shared
 - Admin at `/admin` — protected by GitHub OAuth
 
 ## Stack
@@ -13,6 +15,7 @@ A Nuxt 4 web application for Marmelab team trips. Each trip gets a public page w
 - **yarn** — package manager
 - **nuxt-auth-utils** — GitHub OAuth session management
 - **@vercel/blob**: storage for Vercel deployments (private store for JSON data, public store for images)
+- **satori** + **@resvg/resvg-js**: link-preview images
 - **Vitest** — unit tests
 - **Playwright** — E2E tests
 
@@ -36,14 +39,18 @@ BLOB_DATA_READ_WRITE_TOKEN=   # private Blob store (JSON data), required when ST
 
 The GitHub OAuth callback URL to register: `https://<your-domain>/auth/github`
 
+In development, `STORAGE_DRIVER=local` keeps data on disk (`content/`, `public/`), so the Blob tokens are not needed.
+
 ## Commands
 
 ```bash
-make dev          # start dev server on http://localhost:4567
+make start        # start dev server on http://localhost:4567 (alias: make dev)
 make build        # build for production
 make preview      # preview production build
 make lint         # ESLint
 make typecheck    # TypeScript type checking
+make knip         # unused files, exports and dependencies
+make check        # lint + typecheck + knip + unit tests + build (no e2e)
 make test         # unit + e2e tests
 make test-unit    # unit tests only
 make test-watch   # unit tests in watch mode

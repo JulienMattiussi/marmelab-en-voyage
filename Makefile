@@ -1,4 +1,4 @@
-.PHONY: help install dev build preview lint typecheck test test-unit test-watch test-e2e test-e2e-ui
+.PHONY: help install start dev build preview lint typecheck knip check test test-unit test-watch test-e2e test-e2e-ui
 
 help: ## Display available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -6,6 +6,8 @@ help: ## Display available commands
 install: ## Install all dependencies (yarn + Playwright browsers)
 	yarn install
 	yarn playwright install --with-deps
+
+start: dev ## Start the development server (alias of dev)
 
 dev: ## Start the development server
 	yarn dev
@@ -20,7 +22,10 @@ lint: ## Run ESLint
 	yarn eslint .
 
 typecheck: ## Run TypeScript type checking
-	yarn vue-tsc --noEmit
+	yarn typecheck
+
+knip: ## Find unused files, exports and dependencies
+	yarn knip
 
 test: test-unit test-e2e ## Run all tests (unit + e2e)
 
@@ -35,3 +40,5 @@ test-e2e: ## Run end-to-end tests (starts dev server automatically)
 
 test-e2e-ui: ## Run end-to-end tests with Playwright UI
 	yarn playwright test --ui
+
+check: lint typecheck knip test-unit build ## Run all checks except e2e (lint, typecheck, knip, unit tests, build)

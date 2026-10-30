@@ -13,13 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--color-text);
-  padding-top: 60px;
-}
-
-@media (max-width: 1250px) {
-  #app {
-    padding-top: 10px;
-  }
 }
 
 #greenframe_embedable_score_page {

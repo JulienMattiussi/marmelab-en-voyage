@@ -47,8 +47,25 @@
   /* Spacing */
   --btn-padding: 8px 16px;
 
-  /* Countdown-specific colors */
-  --color-countdown-numbers: var(--color-danger);
-  --color-countdown-days:    brown;
-  --color-countdown-reached: var(--color-success);
+  /* Public pages (home, event): sticker style, ink borders and hard shadows */
+  --public-font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --public-font-body:    'DM Sans', system-ui, sans-serif;
+  --public-ink:          #1b1b1b;
+  --public-paper:        #ffffff;
+  --public-sky:          #d6ebff;
+  --public-sun:          #ffd23f;
+  --public-grass:        #7ee08a;
+  --public-road:         #3a3a3a;
+  --public-veil-opacity: 0.55;
+  --public-border:       2px solid var(--public-ink);
+  --public-border-thick: 3px solid var(--public-ink);
+  --public-shadow:       3px 3px 0 var(--public-ink);
+  --public-shadow-lg:    6px 6px 0 var(--public-ink);
+  --public-shadow-hover: 8px 8px 0 var(--public-ink);
+  --public-radius:       18px;
+  --public-radius-pill:  999px;
+
+  /* Countdown tiles: the days tile stands out, a unit turns green once reached */
+  --color-countdown-days:    var(--public-sun);
+  --color-countdown-reached: var(--public-grass);
 }

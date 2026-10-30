@@ -167,11 +167,11 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
           <h2>Dates</h2>
           <div class="fields">
             <label class="field">
-              <span>Départ</span>
+              <span>Début du compte à rebours <small>(fait avancer le bus et les bières, non affiché)</small></span>
               <input v-model="form.start" type="datetime-local" >
             </label>
             <label class="field">
-              <span>Arrivée</span>
+              <span>Rendez-vous <small>(date du voyage, affichée sur la page)</small></span>
               <input v-model="form.deadline" type="datetime-local" >
             </label>
           </div>

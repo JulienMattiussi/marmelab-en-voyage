@@ -15,6 +15,7 @@ export const readEvent = async (slug: string, options?: ReadOptions): Promise<Tr
   return normalizeEvent(JSON.parse(content) as TripEvent);
 };
 
+/** Raw write of the event file. API routes use writeEventWithPreview (eventPreview.ts), which also refreshes the link preview. */
 export const writeEvent = async (slug: string, data: TripEvent): Promise<void> => {
   const storage = await getStorage();
   await storage.writeJSON(`events/${slug}.json`, JSON.stringify(data, null, 2));

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["scripts/*.mjs"],
+  "ignoreDependencies": ["vue-router", "h3"],
+  "ignoreExportsUsedInFile": true
+}

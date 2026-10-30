@@ -34,7 +34,7 @@ The layout above is the `local` storage driver (default, used in dev and tests).
 
 ```ts
 GlobalParticipant = { id, name, avatar, quote, active }
-TripEvent = { slug, name, published, title, start, deadline, visuals: { background, goal }, participants: string[] }
+TripEvent = { slug, name, published, title, start, deadline, visuals: { background, goal }, participants: string[], ogImage? }
 TransportParticipant = { id, avatar, quote }  // derived at render time, never stored
 ```
 
@@ -42,6 +42,7 @@ Key naming rules:
 - `TripEvent` (not `Event`) — avoids collision with the DOM `Event` type
 - `TransportParticipant` (not `BusParticipant`) — generic transport naming
 - Component `TransportVehicle` (not `BusImage`), `BeerProgress` (not `BeerImage`), `EventCountdown` (not `CountDown`)
+- Dates: `start` only drives the bus and the beers (shown in the admin as "Début du compte à rebours", never on the page); `deadline` is the trip date, shown as "RDV jeudi 26 novembre, 9 h" by `formatRendezVous` (`utils/date.ts`).
 
 ## Business rules
 
@@ -49,6 +50,8 @@ Key naming rules:
 - **Participant quotes** are stored globally on `GlobalParticipant.quote`, never per-event.
 - **Disabled participants** (`active: false`) are excluded from event pages and participant counts in the admin list, even if they are listed in an event's `participants` array.
 - **Default visuals**: if an event has no background image set, `public/assets/back.png` is used; if no goal image, `public/assets/goal.png` is used.
+- **Link previews**: every event save (create, update, visual upload) draws a 1200×630 preview card (title, RDV pill, road and bus) and stores it as `events/<slug>/og.png` next to the visuals; its URL goes in `TripEvent.ogImage` (with a `?v=` timestamp so platforms refetch it). Platforms get a static file, nothing is drawn when they call. Events not saved since fall back to the destination image. A drawing failure never blocks the save. The home page card is a static file, `public/assets/og-home.jpg`.
+- **Saving events**: API routes save events with `writeEventWithPreview` (`server/utils/eventPreview.ts`), never `writeEvent` directly, so the link preview stays in sync.
 - **Legacy data normalization**: `server/utils/events.ts` normalizes participants that were stored as `{ id, quote }` objects (old format) into plain string IDs on read.
 
 ## Authentication
@@ -63,7 +66,7 @@ Admin routes (`/admin/*`) are protected by GitHub OAuth via `nuxt-auth-utils`:
 
 **API protection** (`server/middleware/auth.ts`):
 - `GET /api/events/[slug]` and `GET /api/participants` are **public** — used by the event display page.
-- `GET /api/events/published` is **public**: published events only, used by the home page (cached by Vercel for 1 hour, see `routeRules` in `nuxt.config.ts`).
+- `GET /api/published-events` is **public**: published events only, used by the home page (cached by Vercel for 1 hour, see `routeRules` in `nuxt.config.ts`).
 - `GET /api/events` (list) and all POST/PUT/DELETE routes are **protected** — admin only.
 - Uses `requireUserSession` (not `getUserSession`) to throw a proper 401.
 
@@ -80,12 +83,16 @@ GITHUB_ALLOWED_LOGIN=         # exact GitHub username, case-sensitive (e.g. Juli
 ```
 assets/css/theme.css      # CSS custom properties: colors, fonts, radii, shadows, spacing
 assets/css/admin.css      # shared admin component styles (imported globally in nuxt.config.ts)
+assets/css/public.css     # shared public page styles, e.g. the .sticker card look (imported globally)
 components/
   AppToast.vue            # global toast notifications (bottom-center, auto-dismiss)
-  BeerProgress.vue        # beer progress bar
-  EventCountdown.vue      # full countdown section, uses useCountdown composable
-  EventPage.vue           # public event page wrapper
-  TransportVehicle.vue    # animated transport with speech bubbles
+  BeerProgress.vue        # 9 mugs filling up with time, "0°" badges toggled with the "b" key
+  EventCountdown.vue      # countdown tiles (days, hours, minutes, seconds)
+  EventPage.vue           # public event page: calls useCountdown and lays out the sections
+  JourneyRoad.vue         # road, destination image, bus lane and rendez-vous date
+  MainTitle.vue           # big display title of the public pages
+  PublicBackdrop.vue      # full-screen background image under a sky-blue veil (home and event pages)
+  TransportVehicle.vue    # bus and rotating speech bubble whose tail points at the bus
 composables/
   useAppToast.ts          # toast composable: toast.success(msg) / toast.error(msg)
   useCountdown.ts         # Vue composable wrapping countdown math
@@ -103,9 +110,12 @@ server/
   api/events/             # GET list, POST create, PUT update, DELETE (also removes public/events/<slug>/), POST assets upload
   api/participants/       # GET list, POST create, PUT update, POST avatar upload
   routes/auth/github.get.ts  # OAuth callback
+  assets/fonts/           # TTF fonts used to draw the preview images (Satori does not read WOFF2)
   middleware/auth.ts      # server middleware — enforces auth on protected API routes
   utils/events.ts         # read/write/list/normalize events and participants
   utils/fs.ts             # thin re-export of node:fs (allows mocking in tests)
+  utils/eventPreview.ts   # writeEventWithPreview: draws the event's link-preview image, stores it, then saves the event
+  utils/ogImage.ts        # draws a preview card with satori (layout to SVG) and @resvg/resvg-js (SVG to PNG)
   utils/readOptions.ts    # cached reads for public visitors, fresh reads for the admin
   utils/storage/          # storage drivers: local (filesystem) and vercel-blob
 scripts/
@@ -114,8 +124,9 @@ tests/
   unit/                   # Vitest unit tests
   e2e/                    # Playwright E2E tests
 utils/
-  constants.ts            # EVENT_LIMIT = 5, SITE_NAME
+  constants.ts            # EVENT_LIMIT = 5, SITE_NAME, OG_IMAGE_WIDTH / OG_IMAGE_HEIGHT
   countdownMath.ts        # pure math: computeProgress, splitDuration, beerCount, padTime
+  date.ts                 # formatRendezVous(deadline): "jeudi 26 novembre, 9 h", same result on server and browser
   error.ts                # extractErrorMessage(e, fallback) — shared error extraction for $fetch catch blocks
   slugify.ts              # shared slug/ID generation
 ```
@@ -123,8 +134,8 @@ utils/
 ## Coding rules
 
 - **No type collisions**: always check for name conflicts with DOM/global types before naming a type.
-- **No duplicated code**: shared logic lives in `utils/`, shared styles in `assets/css/admin.css`, shared constants in `utils/constants.ts`.
-- **Theme variables**: all colors, fonts, radii, shadows and spacing live in `assets/css/theme.css` as CSS custom properties. Never hardcode these values in component styles — always reference a variable. This includes countdown-specific colors (`--color-countdown-numbers`, `--color-countdown-days`, `--color-countdown-reached`).
+- **No duplicated code**: shared logic lives in `utils/`, shared styles in `assets/css/admin.css` (admin) and `assets/css/public.css` (public pages), shared constants in `utils/constants.ts`.
+- **Theme variables**: all colors, fonts, radii, shadows and spacing live in `assets/css/theme.css` as CSS custom properties. Never hardcode these values in component styles — always reference a variable. This includes the public pages' sticker style (`--public-*`: fonts, ink, paper, sky, sun, borders, hard shadows) and the countdown tile colors (`--color-countdown-days`, `--color-countdown-reached`). The public fonts (Bricolage Grotesque, DM Sans) are loaded from Google Fonts in `nuxt.config.ts`; the admin keeps its own style.
 - **`node:fs` via wrapper**: never import `node:fs` directly in server code — use `~/server/utils/fs` so tests can mock it cleanly.
 - **Nuxt auto-imports**: `utils/` and `composables/` are auto-imported by Nuxt; no explicit import needed in `.vue` files or server routes.
 - **No speculative abstractions**: don't add helpers, fallbacks, or features that aren't required.
@@ -138,15 +149,18 @@ utils/
 
 - **yarn resolutions** in `package.json` force `@vue/compiler-*` packages and `entities` to consistent versions — this is required to avoid a yarn 1 flat-hoisting conflict that breaks `vue-tsc`. Do not remove these resolutions.
 - `@nuxt/ui`, `@nuxt/icon`, `@nuxt/fonts` are **not** used and should not be added back without a specific need.
+- Preview images use `satori` + `@resvg/resvg-js` directly: `@vercel/og` crashes outside Next.js (dynamic `require("fs")` in its ESM bundle), and `nuxt-og-image` needs `@nuxt/fonts` for custom fonts. Satori refuses to download from some addresses (localhost), so `ogImage.ts` downloads the images itself and passes them as data URIs.
 
 ## Commands
 
 ```bash
 make install       # yarn install + playwright browsers
-make dev           # start dev server on http://localhost:4567
+make start         # start dev server on http://localhost:4567 (alias: make dev)
 make build         # production build
 make lint          # ESLint
 make typecheck     # vue-tsc --noEmit
+make knip          # unused files, exports and dependencies (config: knip.json)
+make check         # lint + typecheck + knip + unit tests + build (everything except e2e)
 make test-unit     # vitest run
 make test-watch    # vitest (watch)
 make test-e2e      # playwright test

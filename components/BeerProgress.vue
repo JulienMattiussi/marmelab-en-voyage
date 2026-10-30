@@ -6,6 +6,7 @@ const { beers = 0 } = defineProps<{
   beers?: number;
 }>();
 
+// "0°" badges (alcohol-free beers), toggled with the "b" key.
 const showDegrees = useState('beerShowDegrees', () => true);
 
 onMounted(() => {
@@ -17,23 +18,23 @@ onMounted(() => {
 });
 
 const imageForSlot = (slot: number): string => {
-  if (slot === beers + 1) return 'assets/beer_last.png';
-  if (slot === beers + 2) return 'assets/beer_prelast.png';
-  if (beers >= slot)      return 'assets/beer.gif';
-  return 'assets/beer.png';
+  if (slot === beers + 1) return '/assets/beer_last.png';
+  if (slot === beers + 2) return '/assets/beer_prelast.png';
+  if (beers >= slot)      return '/assets/beer.gif';
+  return '/assets/beer.png';
 };
 </script>
 
 <template>
-  <div class="beer-row">
-    <div v-for="slot in BEER_COUNT" :key="slot">
+  <div class="beer-row sticker" :aria-label="`${beers} bières sur ${BEER_COUNT}`" role="img">
+    <div v-for="slot in BEER_COUNT" :key="slot" class="beer-slot">
       <NuxtImg
         class="beer"
         :alt="`beer-${slot}`"
         :src="imageForSlot(slot)"
         preload
       />
-      <span v-show="showDegrees" class="degree-label">0°</span>
+      <span v-show="showDegrees" class="degree-badge">0°</span>
     </div>
   </div>
 </template>
@@ -41,30 +42,57 @@ const imageForSlot = (slot: number): string => {
 <style scoped>
 .beer-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 2px 10px;
 }
 
-img.beer {
-  width: 60px;
-}
-
-span.degree-label {
-  font-weight: bold;
-  color: var(--color-countdown-numbers);
+.beer-slot {
   position: relative;
-  left: -39px;
-  bottom: 17px;
 }
 
-@media (max-width: 1250px) {
-  img.beer {
-    width: 40px;
+/* The mug pictures are square with wide margins: overlap them a little. */
+img.beer {
+  display: block;
+  width: 52px;
+  height: 52px;
+  margin: 0 -5px;
+}
+
+/* A little round sticker on the mug, like a label on the glass. */
+.degree-badge {
+  position: absolute;
+  right: 4px;
+  bottom: 6px;
+  min-width: 20px;
+  padding: 1px 3px;
+  box-sizing: border-box;
+  font-family: var(--public-font-display);
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  background: var(--public-grass);
+  border: var(--public-border);
+  border-radius: var(--public-radius-pill);
+}
+
+@media (max-width: 760px) {
+  .beer-row {
+    padding: 0 6px;
   }
 
-  span.degree-label {
-    font-size: x-small;
-    left: 13px;
-    bottom: 28px;
+  img.beer {
+    width: 40px;
+    height: 40px;
+    margin: 0 -3px;
+  }
+
+  .degree-badge {
+    right: 1px;
+    bottom: 3px;
+    min-width: 17px;
+    font-size: 0.5625rem;
+    line-height: 13px;
   }
 }
 </style>

@@ -21,8 +21,9 @@ if (fetchError) {
 
 useShareMeta({
   title: () => event.value?.name ?? '',
-  description: () => event.value?.title ?? '',
-  image: () => event.value?.visuals.goal || event.value?.visuals.background || '/assets/goal.png',
+  description: () => (event.value ? `${formatRendezVous(event.value.deadline)} · ${event.value.title}` : ''),
+  image: () => event.value?.ogImage || event.value?.visuals.goal || '/assets/goal.png',
+  isPreviewCard: () => Boolean(event.value?.ogImage),
   path: `/${slug}`,
 });
 </script>

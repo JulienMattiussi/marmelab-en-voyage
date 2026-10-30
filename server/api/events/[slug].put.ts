@@ -1,4 +1,5 @@
-import { readEvent, writeEvent } from '~/server/utils/events';
+import { readEvent } from '~/server/utils/events';
+import { writeEventWithPreview } from '~/server/utils/eventPreview';
 import type { TripEvent } from '~/types/event';
 
 export default defineEventHandler(async (event) => {
@@ -17,6 +18,5 @@ export default defineEventHandler(async (event) => {
     visuals: { ...existing.visuals, ...body.visuals },
   };
 
-  await writeEvent(slug, updated);
-  return updated;
+  return writeEventWithPreview(event, updated);
 });

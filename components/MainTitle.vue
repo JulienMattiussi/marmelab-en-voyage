@@ -1,22 +1,25 @@
 <script setup lang="ts">
-type Props = {
-  message: string;
-};
-
-const { message } = defineProps<Props>();
+defineProps<{ message: string }>();
 </script>
 
 <template>
-  <div>
-    <h1>{{ message }}</h1>
-  </div>
+  <h1 class="main-title">{{ message }}</h1>
 </template>
 
 <style scoped>
-h1 {
-  margin: 40px 0 0;
-  display: flex;
-  width: 100%;
-  justify-content: center;
+.main-title {
+  margin: 0;
+  font-family: var(--public-font-display);
+  font-size: 4.25rem;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-align: left;
+}
+
+@media (max-width: 760px) {
+  .main-title {
+    font-size: 2.6rem;
+  }
 }
 </style>
