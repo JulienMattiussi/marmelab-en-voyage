@@ -13,3 +13,11 @@
   border: var(--public-border-thick);
   box-shadow: var(--public-shadow-lg);
 }
+
+/* Yellow pill: RDV dates, status codes, buttons. */
+.pill {
+  font-weight: 700;
+  background: var(--public-sun);
+  border: var(--public-border);
+  border-radius: var(--public-radius-pill);
+}

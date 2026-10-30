@@ -41,7 +41,7 @@ useShareMeta({
         </span>
         <span class="event-name">{{ event.name }}</span>
         <span class="event-title">{{ event.title }}</span>
-        <span class="event-rdv">{{ formatRendezVous(event.deadline) }}</span>
+        <span class="event-rdv pill">{{ formatRendezVous(event.deadline) }}</span>
       </NuxtLink>
     </div>
 
@@ -136,10 +136,6 @@ useShareMeta({
   margin-top: 8px;
   padding: 4px 12px;
   font-size: 0.875rem;
-  font-weight: 700;
-  background: var(--public-sun);
-  border: var(--public-border);
-  border-radius: var(--public-radius-pill);
 }
 
 .empty {

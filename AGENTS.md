@@ -83,7 +83,7 @@ GITHUB_ALLOWED_LOGIN=         # exact GitHub username, case-sensitive (e.g. Juli
 ```
 assets/css/theme.css      # CSS custom properties: colors, fonts, radii, shadows, spacing
 assets/css/admin.css      # shared admin component styles (imported globally in nuxt.config.ts)
-assets/css/public.css     # shared public page styles, e.g. the .sticker card look (imported globally)
+assets/css/public.css     # shared public page styles: .sticker cards, .pill yellow pills (imported globally)
 components/
   AppToast.vue            # global toast notifications (bottom-center, auto-dismiss)
   BeerProgress.vue        # 9 mugs filling up with time, "0°" badges toggled with the "b" key
@@ -99,6 +99,7 @@ composables/
   useShareMeta.ts         # Open Graph / Twitter tags for link previews (home and event pages)
 middleware/
   admin.global.ts         # global middleware — redirects unauthenticated users to /login for all /admin/* routes
+error.vue                 # error page in the public style: "Événement introuvable" for 404s, button back to the home page
 pages/
   [slug].vue              # public event page
   login.vue               # GitHub OAuth login page
