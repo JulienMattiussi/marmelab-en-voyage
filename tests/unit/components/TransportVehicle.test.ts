@@ -9,8 +9,8 @@ const NuxtImg = {
 };
 
 const participants: TransportParticipant[] = [
-  { id: 'alice', avatar: '/avatars/alice.png', quote: 'Hello world!' },
-  { id: 'bob', avatar: '/avatars/bob.png', quote: 'Bonjour!' },
+  { id: 'alice', name: 'Alice', avatar: '/avatars/alice.png', quote: 'Hello world!' },
+  { id: 'bob', name: 'Bob', avatar: '/avatars/bob.png', quote: 'Bonjour!' },
 ];
 
 beforeEach(() => vi.useFakeTimers());
@@ -42,6 +42,12 @@ describe('TransportVehicle', () => {
   it('shows the avatar of the participant who speaks', () => {
     const wrapper = mountVehicle();
     expect(wrapper.find('.speech-bubble img').attributes('src')).toBe('/avatars/alice.png');
+  });
+
+  it('names the participant who speaks, shown when hovering the avatar', () => {
+    const wrapper = mountVehicle();
+    expect(wrapper.find('.speech-bubble img').attributes('alt')).toBe('Alice');
+    expect(wrapper.find('.avatar-name').text()).toBe('Alice');
   });
 
   it('rotates to the next participant after 3 seconds', async () => {

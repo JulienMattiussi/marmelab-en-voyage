@@ -88,10 +88,10 @@ describe('VercelBlobDriver writes', () => {
     );
   });
 
-  it('writes assets to the public store', async () => {
+  it('writes assets to the public store, with a new URL on each write', async () => {
     blob.put.mockResolvedValue({ url: 'https://public.example/avatars/alice.png' });
     const url = await driver.putAsset('avatars/alice.png', Buffer.from(''), 'image/png');
-    expect(url).toBe('https://public.example/avatars/alice.png');
+    expect(url).toMatch(/^https:\/\/public\.example\/avatars\/alice\.png\?v=\d+$/);
     expect(blob.put).toHaveBeenCalledWith(
       'avatars/alice.png',
       expect.anything(),

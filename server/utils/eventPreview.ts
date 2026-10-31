@@ -24,8 +24,8 @@ export const writeEventWithPreview = async (event: H3Event, data: TripEvent): Pr
     });
     const storage = await getStorage();
     const url = await storage.putAsset(`events/${data.slug}/og.png`, png, 'image/png');
-    // A new URL on each save, so platforms that already cached the preview fetch the new one.
-    saved = { ...data, ogImage: `${url}?v=${Date.now()}` };
+    // putAsset returns a new URL on each save, so platforms that already cached the preview fetch the new one.
+    saved = { ...data, ogImage: url };
   } catch (e) {
     console.error(`Preview image of "${data.slug}" not generated`, e);
   }

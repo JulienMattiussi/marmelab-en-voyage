@@ -12,7 +12,8 @@ export interface StorageDriver {
   deleteJSON(key: string): Promise<void>;
 
   // Binary assets — key is a path like 'events/my-event/background.jpg'
-  // Returns a public URL usable in <img src="...">
+  // Returns a public URL usable in <img src="...">, with a ?v= version so that a replaced
+  // file gets a new URL and browsers don't show the copy they already cached
   putAsset(key: string, data: Buffer, contentType: string): Promise<string>;
   deleteAssetsByPrefix(prefix: string): Promise<void>;
 }

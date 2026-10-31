@@ -35,6 +35,7 @@ export type TripEvent = {
 /** A participant as needed by the transport vehicle component */
 export type TransportParticipant = {
   id: string;
+  name: string;
   avatar: string;
   quote: string;
 };

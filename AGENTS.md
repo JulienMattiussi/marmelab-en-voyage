@@ -26,7 +26,7 @@ Images are stored in `public/events/<slug>/` (event visuals) and `public/avatars
 The layout above is the `local` storage driver (default, used in dev and tests). In production on Vercel, `STORAGE_DRIVER=vercel-blob` uses two Blob stores (`server/utils/storage/vercel-blob.ts`):
 
 - **Private store** (`BLOB_DATA_READ_WRITE_TOKEN`): the JSON data. Reads bypass the CDN cache by default, so the admin and every read-before-write see the latest version. Public pages pass `{ cached: true }` (via `readOptionsFor(event)` in `server/utils/readOptions.ts`) and may get a copy up to ~60s old, which keeps Blob operations within the Hobby quota.
-- **Public store** (`BLOB_READ_WRITE_TOKEN`): the images, linked directly from pages.
+- **Public store** (`BLOB_READ_WRITE_TOKEN`): the images, linked directly from pages. A replaced image keeps its file name, so `putAsset` (both drivers) adds a `?v=` timestamp to the returned URL: browsers would otherwise keep showing the old copy.
 - Tokens are always passed explicitly: the SDK would otherwise prefer `BLOB_STORE_ID` (added by Vercel when connecting a store) over `BLOB_READ_WRITE_TOKEN`.
 - Transient read failures are retried, then surface as a 503 that the admin pages display.
 
@@ -35,7 +35,7 @@ The layout above is the `local` storage driver (default, used in dev and tests).
 ```ts
 GlobalParticipant = { id, name, avatar, quote, active, avatarSource? }
 TripEvent = { slug, name, published, title, start, deadline, visuals: { background, goal }, participants: string[], ogImage? }
-TransportParticipant = { id, avatar, quote }  // derived at render time, never stored
+TransportParticipant = { id, name, avatar, quote }  // derived at render time, never stored
 ```
 
 Key naming rules:
@@ -93,7 +93,7 @@ components/
   JourneyRoad.vue         # road, destination image, bus lane and rendez-vous date
   MainTitle.vue           # big display title of the public pages
   PublicBackdrop.vue      # full-screen background image under a sky-blue veil (home and event pages)
-  TransportVehicle.vue    # bus and rotating speech bubble whose tail points at the bus
+  TransportVehicle.vue    # bus and rotating speech bubble whose tail points at the bus; the name shows when hovering the avatar
 composables/
   useAppToast.ts          # toast composable: toast.success(msg) / toast.error(msg)
   useCountdown.ts         # Vue composable wrapping countdown math

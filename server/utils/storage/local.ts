@@ -34,7 +34,7 @@ export class LocalDriver implements StorageDriver {
     const dir = dirname(filePath);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     writeFileSync(filePath, data);
-    return `/${key}`;
+    return `/${key}?v=${Date.now()}`;
   }
 
   async deleteAssetsByPrefix(prefix: string): Promise<void> {

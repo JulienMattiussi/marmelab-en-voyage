@@ -34,8 +34,11 @@ onUnmounted(() => clearTimeout(timer));
       :key="participant.id"
       class="speech-bubble sticker"
     >
-      <span class="avatar-frame">
-        <NuxtImg class="avatar" :alt="participant.id" :src="participant.avatar" preload />
+      <span class="avatar-hover">
+        <span class="avatar-frame">
+          <NuxtImg class="avatar" :alt="participant.name" :src="participant.avatar" preload />
+        </span>
+        <span class="avatar-name pill">{{ participant.name }}</span>
       </span>
       <span class="quote">{{ participant.quote }}</span>
       <svg class="bubble-tail" viewBox="0 0 24 22" aria-hidden="true">
@@ -98,6 +101,29 @@ onUnmounted(() => clearTimeout(timer));
   transform: translateX(calc(-1 * var(--anchor))) rotate(-2deg);
   /* Tilt around the point where the tail joins, so they stay attached wherever the bus is. */
   transform-origin: var(--anchor) 100%;
+}
+
+/* Holds the name pill outside the frame, which clips the avatar. */
+.avatar-hover {
+  position: relative;
+  flex: none;
+}
+
+.avatar-name {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  translate: -50% 0;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.avatar-hover:hover .avatar-name {
+  opacity: 1;
 }
 
 /* Full-body cartoon avatars: show them down to the waist. */

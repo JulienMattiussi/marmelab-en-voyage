@@ -69,7 +69,7 @@ export class VercelBlobDriver implements StorageDriver {
       addRandomSuffix: false,
       allowOverwrite: true,
     });
-    return url;
+    return `${url}?v=${Date.now()}`;
   }
 
   async deleteAssetsByPrefix(prefix: string): Promise<void> {

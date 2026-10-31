@@ -40,7 +40,7 @@ beforeEach(() => {
 describe('writeEventWithPreview', () => {
   it('draws the preview card from the event and stores it next to the visuals', async () => {
     mocks.renderOgImage.mockResolvedValue(Buffer.from('png'));
-    mocks.putAsset.mockResolvedValue('https://blob.example/events/hiver-2026/og.png');
+    mocks.putAsset.mockResolvedValue('https://blob.example/events/hiver-2026/og.png?v=1');
 
     const saved = await writeEventWithPreview({} as never, tripEvent);
 
@@ -53,7 +53,7 @@ describe('writeEventWithPreview', () => {
       bus: 'https://example.com/assets/bus.png',
     });
     expect(mocks.putAsset).toHaveBeenCalledWith('events/hiver-2026/og.png', expect.any(Buffer), 'image/png');
-    expect(saved.ogImage).toMatch(/^https:\/\/blob\.example\/events\/hiver-2026\/og\.png\?v=\d+$/);
+    expect(saved.ogImage).toBe('https://blob.example/events/hiver-2026/og.png?v=1');
     expect(mocks.writeEvent).toHaveBeenCalledWith('hiver-2026', saved);
   });
 

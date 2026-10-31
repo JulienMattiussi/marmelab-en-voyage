@@ -15,6 +15,7 @@ const transportParticipants = computed<TransportParticipant[]>(() =>
       const found = globalParticipants.find((p) => p.id === id);
       return {
         id,
+        name: found?.name ?? id,
         avatar: found?.avatar ?? `/avatars/${id}.png`,
         quote: found?.quote ?? '',
       };
