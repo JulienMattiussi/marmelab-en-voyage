@@ -1,12 +1,19 @@
 import { getStorage } from './storage';
 import type { ReadOptions } from './storage/types';
-import type { TripEvent, GlobalParticipant } from '~/types/event';
+import { EVENT_THEME_LABELS } from '~/utils/constants';
+import type { TripEvent, GlobalParticipant, EventTheme } from '~/types/event';
 
 const normalizeEvent = (raw: TripEvent): TripEvent => ({
   ...raw,
   // Participants may be stored as legacy objects { id, quote } — normalize to string IDs.
   participants: raw.participants.map((p) => (typeof p === 'string' ? p : (p as { id: string }).id)),
 });
+
+/** Keeps a known theme; anything else (the editor sends '' for "no theme") removes it. */
+export const withTheme = (data: TripEvent, theme: unknown): TripEvent => {
+  const { theme: _, ...rest } = data;
+  return typeof theme === 'string' && theme in EVENT_THEME_LABELS ? { ...rest, theme: theme as EventTheme } : rest;
+};
 
 export const readEvent = async (slug: string, options?: ReadOptions): Promise<TripEvent | null> => {
   const storage = await getStorage();

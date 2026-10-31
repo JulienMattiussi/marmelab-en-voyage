@@ -21,7 +21,7 @@ vi.mock('~/server/utils/storage/index', () => ({
 }));
 
 // eslint-disable-next-line import/first
-import { readEvent, writeEvent, listEvents, readParticipants } from '~/server/utils/events';
+import { readEvent, writeEvent, listEvents, readParticipants, withTheme } from '~/server/utils/events';
 
 const mockEvent: TripEvent = {
   slug: 'test-event',
@@ -97,5 +97,17 @@ describe('readParticipants', () => {
   it('parses and returns the participants list', async () => {
     vi.mocked(mockStorage.readJSON).mockResolvedValue(JSON.stringify([mockParticipant]));
     expect(await readParticipants()).toEqual([mockParticipant]);
+  });
+});
+
+describe('withTheme', () => {
+  it('sets a known theme', () => {
+    expect(withTheme(mockEvent, 'winter').theme).toBe('winter');
+  });
+
+  it('removes the theme for "no theme" or an unknown value', () => {
+    const themed: TripEvent = { ...mockEvent, theme: 'summer' };
+    expect(withTheme(themed, '')).not.toHaveProperty('theme');
+    expect(withTheme(themed, 'autumn')).not.toHaveProperty('theme');
   });
 });

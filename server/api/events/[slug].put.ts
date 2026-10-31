@@ -1,4 +1,4 @@
-import { readEvent } from '~/server/utils/events';
+import { readEvent, withTheme } from '~/server/utils/events';
 import { writeEventWithPreview } from '~/server/utils/eventPreview';
 import type { TripEvent } from '~/types/event';
 
@@ -18,5 +18,5 @@ export default defineEventHandler(async (event) => {
     visuals: { ...existing.visuals, ...body.visuals },
   };
 
-  return writeEventWithPreview(event, updated);
+  return writeEventWithPreview(event, 'theme' in body ? withTheme(updated, body.theme) : updated);
 });

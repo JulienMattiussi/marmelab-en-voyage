@@ -6,7 +6,7 @@ const { event, globalParticipants } = defineProps<{
   globalParticipants: GlobalParticipant[];
 }>();
 
-const { time, progress, beers } = useCountdown(event.start, event.deadline);
+const { time, progress, beers, arrived } = useCountdown(event.start, event.deadline);
 
 const transportParticipants = computed<TransportParticipant[]>(() =>
   event.participants
@@ -24,13 +24,16 @@ const transportParticipants = computed<TransportParticipant[]>(() =>
 </script>
 
 <template>
-  <div class="event-page">
+  <div class="event-page" :data-theme="event.theme">
     <PublicBackdrop :image="event.visuals.background || '/assets/back.png'" />
+    <WinterDecor v-if="event.theme === 'winter'" />
+    <SummerDecor v-else-if="event.theme === 'summer'" />
     <header class="event-header">
       <MainTitle :message="event.title" />
       <BeerProgress :beers="beers" />
     </header>
-    <EventCountdown :time="time" />
+    <ArrivalBanner v-if="arrived" />
+    <EventCountdown v-else :time="time" />
     <JourneyRoad
       class="event-journey"
       :progress="progress"
@@ -43,6 +46,8 @@ const transportParticipants = computed<TransportParticipant[]>(() =>
 
 <style scoped>
 .event-page {
+  /* The winter garland hangs from the top of the page. */
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 32px;

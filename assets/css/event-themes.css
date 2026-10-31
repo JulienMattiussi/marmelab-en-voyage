@@ -1,0 +1,126 @@
+/*
+  Seasonal themes of the event page (TripEvent.theme), imported globally in nuxt.config.ts.
+  EventPage sets data-theme; the moving decorations (snow, garland, sun, butterflies) are the
+  WinterDecor and SummerDecor components. This file recolors the page and adds what sits on
+  existing elements: a snowbank or flowers along the road, snow on the tiles, the bus roof load.
+*/
+
+.event-page[data-theme='winter'] {
+  --public-sky: var(--public-sky-winter);
+  --public-veil-opacity: 0.65;
+  --color-countdown-days: var(--public-holly);
+}
+
+.event-page[data-theme='summer'] {
+  --public-sky: var(--public-sky-summer);
+  --color-countdown-days: var(--public-orange);
+}
+
+/* Shared by the snow caps and the flower edge: something lying on top of an element (the bus body is positioned in its component). */
+.event-page[data-theme] :is(.tile, .road) {
+  position: relative;
+}
+
+.event-page[data-theme] :is(.tile, .road)::before,
+.event-page[data-theme] .bus-body::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+/*
+  Winter, outlined in ink like the stickers. On the tiles and the bus roof, a snow cap: a smooth
+  rounded layer lying on the edge, with drips of two sizes hanging over it.
+*/
+.event-page[data-theme='winter'] .tile::before,
+.event-page[data-theme='winter'] .bus-body::before {
+  height: 17px;
+  border-radius: 10px 10px 0 0;
+  background:
+    linear-gradient(var(--public-snow), var(--public-snow)) 0 0 / 100% 10px no-repeat,
+    radial-gradient(circle at 50% 0, var(--public-snow) 6px, transparent 7px) 0 10px / 22px 7px repeat-x,
+    radial-gradient(circle at 50% 0, var(--public-snow) 4px, transparent 5px) 11px 10px / 31px 5px repeat-x;
+  filter:
+    drop-shadow(0 -2px 0 var(--public-ink))
+    drop-shadow(0 2px 0 var(--public-ink))
+    drop-shadow(2px 0 0 var(--public-ink))
+    drop-shadow(-2px 0 0 var(--public-ink));
+}
+
+.event-page[data-theme='winter'] .tile::before {
+  top: -9px;
+  left: 12px;
+  right: 12px;
+}
+
+/*
+  The road is flat ground: no drips, but a snowbank pushed to the far roadside, mounds of
+  uneven sizes resting on its edge.
+*/
+.event-page[data-theme='winter'] .road::before {
+  top: -13px;
+  left: 10px;
+  right: 10px;
+  height: 15px;
+  background:
+    radial-gradient(ellipse 15px 11px at 50% 100%, var(--public-snow) 97%, transparent) 0 100% / 36px 13px repeat-x,
+    radial-gradient(ellipse 10px 7px at 50% 100%, var(--public-snow) 97%, transparent) 19px 100% / 49px 9px repeat-x,
+    linear-gradient(var(--public-snow), var(--public-snow)) 0 100% / 100% 4px no-repeat;
+  filter:
+    drop-shadow(0 -2px 0 var(--public-ink))
+    drop-shadow(2px 0 0 var(--public-ink))
+    drop-shadow(-2px 0 0 var(--public-ink));
+}
+
+/* On the roof of bus.png (roof line at 22% of the picture height). */
+.event-page[data-theme='winter'] .bus-body::before {
+  top: calc(22% - 12px);
+  left: 20%;
+  right: 24%;
+  z-index: 1;
+}
+
+/* Summer: a flower edge along the road and a surfboard on the roof. */
+.event-page[data-theme='summer'] .road::before {
+  top: -14px;
+  left: 10px;
+  right: 10px;
+  height: 14px;
+  background:
+    radial-gradient(circle at 9px 6px, var(--public-sun) 3px, var(--public-berry) 4px, var(--public-berry) 6px, transparent 7px) 0 0 / 46px 14px repeat-x,
+    radial-gradient(circle at 32px 7px, var(--public-sun) 3px, var(--public-paper) 4px, var(--public-paper) 6px, transparent 7px) 0 0 / 46px 14px repeat-x,
+    linear-gradient(var(--public-grass), var(--public-grass)) 0 100% / 100% 5px no-repeat;
+}
+
+/*
+  Summer: a surfboard on a roof rack, deck up: the nose rises at the front, the fin hangs under the tail. Two layers cut out by the same
+  drawing: ::before in ink, drawn with a thick stroke, makes the outline and the rack posts;
+  ::after is the board itself, painted on top. Only the shape is in the SVG, colors stay variables.
+*/
+.event-page[data-theme='summer'] .bus-body::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.event-page[data-theme='summer'] .bus-body::before,
+.event-page[data-theme='summer'] .bus-body::after {
+  left: 10%;
+  right: 12%;
+  bottom: 78%;
+  aspect-ratio: 6;
+  z-index: 1;
+  mask-size: 100% 100%;
+}
+
+.event-page[data-theme='summer'] .bus-body::before {
+  background: var(--public-ink);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 20'%3E%3Cg stroke='black' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M7 9H90Q108 9 118 5Q112 15 90 15H7Q3 15 3 12Q3 9 7 9Z'/%3E%3Cpath d='M25 15L17 19Q14.5 20 14 17.5L13 15Z'/%3E%3C/g%3E%3Crect x='30' y='15' width='3' height='5'/%3E%3Crect x='82' y='15' width='3' height='5'/%3E%3C/svg%3E");
+}
+
+.event-page[data-theme='summer'] .bus-body::after {
+  background:
+    linear-gradient(var(--public-ink), var(--public-ink)) 0 58% / 100% 1px no-repeat,
+    linear-gradient(90deg, var(--public-ocean) 62%, var(--public-paper) 62% 68%, var(--public-sun) 68% 74%, var(--public-ocean) 74%);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 20'%3E%3Cpath d='M7 9H90Q108 9 118 5Q112 15 90 15H7Q3 15 3 12Q3 9 7 9Z'/%3E%3Cpath d='M25 15L17 19Q14.5 20 14 17.5L13 15Z'/%3E%3C/svg%3E");
+}

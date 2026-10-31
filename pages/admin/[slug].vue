@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { EVENT_THEME_LABELS } from '~/utils/constants';
 import type { TripEvent, GlobalParticipant } from '~/types/event';
 
 const route = useRoute();
@@ -26,6 +27,7 @@ const form = reactive<TripEvent>({
   deadline: '',
   visuals: { background: '', goal: '' },
   participants: [],
+  theme: undefined,
 });
 
 if (!isNew && existingEvent.value) {
@@ -36,6 +38,13 @@ if (!isNew && existingEvent.value) {
 watch(() => form.name, (name) => {
   if (!isNew) return;
   form.slug = slugify(name);
+});
+
+// "No theme" is '' in the select and in the request (an undefined field would not be sent,
+// and the server would keep the previous theme).
+const themeChoice = computed({
+  get: () => form.theme ?? '',
+  set: (value: string) => { form.theme = (value || undefined) as TripEvent['theme']; },
 });
 
 // --- Participant helpers ---
@@ -74,15 +83,16 @@ const saveError = ref('');
 const toast = useAppToast();
 
 const save = async () => {
+  const body = { ...form, theme: form.theme ?? '' };
   saving.value = true;
   saveError.value = '';
   try {
     if (isNew) {
-      await $fetch('/api/events', { method: 'POST', body: form });
+      await $fetch('/api/events', { method: 'POST', body });
       toast.success('Événement créé');
       await router.push(`/admin/${form.slug}`);
     } else {
-      await $fetch(`/api/events/${urlSlug}`, { method: 'PUT', body: form });
+      await $fetch(`/api/events/${urlSlug}`, { method: 'PUT', body });
       toast.success('Événement sauvegardé');
     }
   } catch (e: unknown) {
@@ -198,6 +208,13 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
             </div>
           </div>
           <div v-if="uploadError" class="alert-error">{{ uploadError }}</div>
+          <label class="field theme-field">
+            <span>Thème <small>(décors saisonniers sur la page)</small></span>
+            <select v-model="themeChoice">
+              <option value="">Aucun</option>
+              <option v-for="(label, value) in EVENT_THEME_LABELS" :key="value" :value="value">{{ label }}</option>
+            </select>
+          </label>
         </section>
 
         <section class="card">
@@ -286,7 +303,8 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 .field > span small { font-weight: normal; color: var(--color-text-faint); }
 
 .field input[type="text"],
-.field input[type="datetime-local"] {
+.field input[type="datetime-local"],
+.field select {
   padding: 8px 12px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -296,6 +314,8 @@ const onFileChange = (field: 'background' | 'goal', e: InputEvent) => {
 }
 
 .field input:disabled { background: var(--color-bg); color: var(--color-text-faint); }
+
+.theme-field { margin-top: 16px; max-width: 50%; }
 
 .upload-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .thumb { height: 50px; width: auto; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }

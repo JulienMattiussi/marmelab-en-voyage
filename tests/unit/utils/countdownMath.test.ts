@@ -3,6 +3,7 @@ import {
   computeProgress,
   splitDuration,
   beerCount,
+  isArrivalDay,
   padTime,
   BEER_COUNT,
 } from '~/utils/countdownMath';
@@ -88,5 +89,27 @@ describe('padTime', () => {
   it('does not pad two-digit numbers', () => {
     expect(padTime(10)).toBe('10');
     expect(padTime(59)).toBe('59');
+  });
+});
+
+describe('isArrivalDay', () => {
+  // Local dates: the celebration follows the visitor's calendar day.
+  const deadline = new Date(2026, 10, 26, 9, 0).getTime();
+
+  it('is false before the rendez-vous time', () => {
+    expect(isArrivalDay(deadline, new Date(2026, 10, 26, 8, 59).getTime())).toBe(false);
+  });
+
+  it('is true from the rendez-vous time until the end of the day', () => {
+    expect(isArrivalDay(deadline, deadline)).toBe(true);
+    expect(isArrivalDay(deadline, new Date(2026, 10, 26, 23, 59).getTime())).toBe(true);
+  });
+
+  it('is false the following days', () => {
+    expect(isArrivalDay(deadline, new Date(2026, 10, 27, 0, 0).getTime())).toBe(false);
+  });
+
+  it('is false without a valid rendez-vous', () => {
+    expect(isArrivalDay(Number.NaN, deadline)).toBe(false);
   });
 });

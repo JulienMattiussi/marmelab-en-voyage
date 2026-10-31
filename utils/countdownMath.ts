@@ -41,6 +41,15 @@ export const splitDuration = (ms: number): TimeComponents => {
 export const beerCount = (progress: number): number =>
   Math.floor((progress / 100) * BEER_COUNT);
 
+/**
+ * True on the day of the trip, from the rendez-vous time until midnight (local time):
+ * the page celebrates the arrival that day only.
+ */
+export const isArrivalDay = (deadlineMs: number, nowMs: number): boolean => {
+  if (Number.isNaN(deadlineMs) || nowMs < deadlineMs) return false;
+  return new Date(deadlineMs).toDateString() === new Date(nowMs).toDateString();
+};
+
 /** Pads a time unit to at least 2 digits: 5 → "05", 12 → "12". */
 export const padTime = (value: number): string =>
   String(value).padStart(2, '0');

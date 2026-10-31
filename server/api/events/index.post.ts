@@ -1,4 +1,4 @@
-import { readEvent, listEvents } from '~/server/utils/events';
+import { readEvent, listEvents, withTheme } from '~/server/utils/events';
 import { writeEventWithPreview } from '~/server/utils/eventPreview';
 import { EVENT_LIMIT } from '~/utils/constants';
 import type { TripEvent } from '~/types/event';
@@ -29,5 +29,5 @@ export default defineEventHandler(async (event) => {
     participants: body.participants ?? [],
   };
 
-  return writeEventWithPreview(event, newEvent);
+  return writeEventWithPreview(event, withTheme(newEvent, body.theme));
 });

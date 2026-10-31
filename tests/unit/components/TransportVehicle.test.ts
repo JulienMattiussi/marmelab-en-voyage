@@ -57,6 +57,25 @@ describe('TransportVehicle', () => {
     expect(wrapper.text()).toContain('Bonjour!');
   });
 
+  it('holds the speech bubble while hovered', async () => {
+    const wrapper = mountVehicle();
+    await wrapper.find('.speech-bubble').trigger('mouseenter');
+    await vi.advanceTimersByTimeAsync(6_001);
+    expect(wrapper.text()).toContain('Hello world!');
+    await wrapper.find('.speech-bubble').trigger('mouseleave');
+    await vi.advanceTimersByTimeAsync(3_001);
+    expect(wrapper.text()).toContain('Bonjour!');
+  });
+
+  it('honks when the bus is clicked, then stops', async () => {
+    const wrapper = mountVehicle();
+    await wrapper.find('button.bus').trigger('click');
+    await vi.advanceTimersByTimeAsync(20);
+    expect(wrapper.find('.honk').text()).toBe('Pouet !');
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(wrapper.find('.honk').exists()).toBe(false);
+  });
+
   it('wraps back to the first participant after cycling through all', async () => {
     const wrapper = mountVehicle();
     // 2 participants → advance 2 × 3s to return to first

@@ -17,8 +17,27 @@ const rotateSpeechBubble = () => {
   }, 3_000);
 };
 
+// Hovering the bubble holds it, to leave time to read the quote and the name.
+const pauseSpeechBubble = () => clearTimeout(timer);
+
+// Clicking the bus honks: a "Pouet !" and a little jump. A new click restarts both.
+const honking = ref(false);
+let honkTimer: ReturnType<typeof setTimeout>;
+
+const honk = () => {
+  clearTimeout(honkTimer);
+  honking.value = false;
+  requestAnimationFrame(() => {
+    honking.value = true;
+    honkTimer = setTimeout(() => { honking.value = false; }, 900);
+  });
+};
+
 onMounted(rotateSpeechBubble);
-onUnmounted(() => clearTimeout(timer));
+onUnmounted(() => {
+  clearTimeout(timer);
+  clearTimeout(honkTimer);
+});
 </script>
 
 <!--
@@ -33,6 +52,8 @@ onUnmounted(() => clearTimeout(timer));
       v-show="index === currentIndex"
       :key="participant.id"
       class="speech-bubble sticker"
+      @mouseenter="pauseSpeechBubble"
+      @mouseleave="rotateSpeechBubble"
     >
       <span class="avatar-hover">
         <span class="avatar-frame">
@@ -46,7 +67,16 @@ onUnmounted(() => clearTimeout(timer));
         <path class="bubble-tail-outline" d="M1 2 L12 20 L23 2" />
       </svg>
     </div>
-    <NuxtImg class="bus" alt="Transport" src="/assets/bus.png" />
+    <button type="button" :class="['bus', { 'bus--honking': honking }]" aria-label="Klaxonner" @click="honk">
+      <span class="exhaust" aria-hidden="true">
+        <span v-for="puff in 3" :key="puff" class="puff" />
+      </span>
+      <!-- Rocks on the road, with what a theme loads on the roof (::before, see event-themes.css). -->
+      <span class="bus-body">
+        <NuxtImg class="bus-image" alt="" src="/assets/bus.png" />
+      </span>
+    </button>
+    <span v-if="honking" class="honk pill" aria-hidden="true">Pouet !</span>
   </div>
 </template>
 
@@ -57,6 +87,9 @@ onUnmounted(() => clearTimeout(timer));
   /* bus.png has a transparent strip under the wheels */
   --bus-gap: 13px;
   --tail-bottom: 77px;
+  --avatar-size: 130px;
+  /* Shown down to the waist. */
+  --avatar-visible-height: 113px;
   position: absolute;
   inset: 0;
 }
@@ -67,9 +100,88 @@ onUnmounted(() => clearTimeout(timer));
   bottom: calc(-1 * var(--bus-gap));
   width: var(--bus-width);
   height: var(--bus-height);
-  /* `translate` (not `transform`), so the rocking rotation stays around the bus centre. */
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* `translate` for the position, `transform` for the jump: they add up. */
   translate: -50% 0;
+}
+
+.bus:focus-visible {
+  outline: var(--public-border);
+  outline-offset: 4px;
+  border-radius: var(--public-radius);
+}
+
+.bus-body {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
   animation: oscillating 0.5s infinite;
+}
+
+.bus-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bus--honking {
+  animation: jump 0.5s ease-out;
+}
+
+@keyframes jump {
+  0%, 100% { transform: translateY(0); }
+  35%      { transform: translateY(-22px) rotate(-4deg); }
+  70%      { transform: translateY(0) rotate(2deg); }
+}
+
+.honk {
+  position: absolute;
+  left: calc(var(--position) + var(--bus-width) / 2);
+  bottom: calc(var(--bus-height) - var(--bus-gap));
+  padding: 2px 10px;
+  font-family: var(--public-font-display);
+  font-size: 1rem;
+  white-space: nowrap;
+  rotate: 8deg;
+  animation: honk-pop 0.9s ease-out forwards;
+}
+
+@keyframes honk-pop {
+  0%   { opacity: 0; scale: 0.4; }
+  20%  { opacity: 1; scale: 1.1; }
+  80%  { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 1; }
+}
+
+/* Little smoke puffs out of the exhaust, at the back of the bus (it drives to the right). */
+.exhaust {
+  position: absolute;
+  left: 12%;
+  bottom: 30%;
+}
+
+.puff {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--public-paper);
+  border: var(--public-border);
+  border-radius: 50%;
+  opacity: 0;
+  animation: puff 1.5s ease-out infinite;
+}
+
+.puff:nth-child(2) { animation-delay: 0.5s; }
+.puff:nth-child(3) { animation-delay: 1s; }
+
+@keyframes puff {
+  0%   { opacity: 0; translate: 0 0; scale: 0.4; }
+  15%  { opacity: 0.9; }
+  100% { opacity: 0; translate: -34px -18px; scale: 1.3; }
 }
 
 @keyframes oscillating {
@@ -89,10 +201,10 @@ onUnmounted(() => clearTimeout(timer));
   align-items: center;
   gap: 6px;
   width: max-content;
-  max-width: min(460px, 100%);
-  padding: 2px 16px 2px 2px;
+  max-width: min(520px, 100%);
+  padding: 2px 18px 2px 2px;
   box-sizing: border-box;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.25;
   text-align: left;
@@ -133,14 +245,14 @@ onUnmounted(() => clearTimeout(timer));
 .avatar-frame {
   flex: none;
   display: flex;
-  height: 82px;
+  height: var(--avatar-visible-height);
   overflow: hidden;
 }
 
 .avatar {
   flex: none;
-  width: 94px;
-  height: 94px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
   max-width: none;
 }
 
@@ -177,25 +289,21 @@ onUnmounted(() => clearTimeout(timer));
     --bus-height: 56px;
     --bus-gap: 8px;
     --tail-bottom: 52px;
+    --avatar-size: 84px;
+    --avatar-visible-height: 72px;
   }
 
   .speech-bubble {
     font-size: 0.875rem;
+    padding-right: 16px;
     transform: translateX(calc(-1 * var(--anchor)));
-  }
-
-  .avatar-frame {
-    height: 72px;
-  }
-
-  .avatar {
-    width: 84px;
-    height: 84px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bus {
+  .bus-body,
+  .bus--honking,
+  .puff {
     animation: none;
   }
 }

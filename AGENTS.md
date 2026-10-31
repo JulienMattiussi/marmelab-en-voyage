@@ -34,7 +34,8 @@ The layout above is the `local` storage driver (default, used in dev and tests).
 
 ```ts
 GlobalParticipant = { id, name, avatar, quote, active, avatarSource? }
-TripEvent = { slug, name, published, title, start, deadline, visuals: { background, goal }, participants: string[], ogImage? }
+TripEvent = { slug, name, published, title, start, deadline, visuals: { background, goal }, participants: string[], theme?, ogImage? }
+EventTheme = 'summer' | 'winter'  // no theme: the plain page
 TransportParticipant = { id, name, avatar, quote }  // derived at render time, never stored
 ```
 
@@ -51,6 +52,8 @@ Key naming rules:
 - **Disabled participants** (`active: false`) are excluded from event pages and participant counts in the admin list, even if they are listed in an event's `participants` array.
 - **Default visuals**: if an event has no background image set, `public/assets/back.png` is used; if no goal image, `public/assets/goal.png` is used.
 - **Link previews**: every event save (create, update, visual upload) draws a 1200×630 preview card (title, RDV pill, road and bus) and stores it as `events/<slug>/og.png` next to the visuals; its URL goes in `TripEvent.ogImage` (with a `?v=` timestamp so platforms refetch it). Platforms get a static file, nothing is drawn when they call. Events not saved since fall back to the destination image. A drawing failure never blocks the save. The home page card is a static file, `public/assets/og-home.jpg`.
+- **Themes**: an event can have a seasonal theme (summer or winter, chosen in the editor; labels in `EVENT_THEME_LABELS`). `EventPage` sets `data-theme`: `assets/css/event-themes.css` recolors the page and adds the snow caps or the flower edge, `WinterDecor` / `SummerDecor` add the moving decorations. The editor sends `theme: ''` for "no theme", and `withTheme` (`server/utils/events.ts`) keeps only known themes.
+- **Arrival day**: from the rendez-vous time until midnight that day (visitor's local time), the countdown tiles give way to an "On y est !" banner with confetti (`isArrivalDay` in `utils/countdownMath.ts`). Computed in the browser only, to avoid a hydration mismatch. The following days show the countdown at zero again.
 - **Saving events**: API routes save events with `writeEventWithPreview` (`server/utils/eventPreview.ts`), never `writeEvent` directly, so the link preview stays in sync.
 - **Legacy data normalization**: `server/utils/events.ts` normalizes participants that were stored as `{ id, quote }` objects (old format) into plain string IDs on read.
 
@@ -85,15 +88,20 @@ GITHUB_ALLOWED_LOGIN=         # exact GitHub username, case-sensitive (e.g. Juli
 assets/css/theme.css      # CSS custom properties: colors, fonts, radii, shadows, spacing
 assets/css/admin.css      # shared admin component styles (imported globally in nuxt.config.ts)
 assets/css/public.css     # shared public page styles: .sticker cards, .pill yellow pills (imported globally)
+assets/css/event-themes.css  # seasonal themes of the event page (colors, snow caps, flower edge), imported globally
 components/
   AppToast.vue            # global toast notifications (bottom-center, auto-dismiss)
+  ArrivalBanner.vue       # "On y est !" banner and confetti, in place of the countdown on the arrival day
   BeerProgress.vue        # 9 mugs filling up with time, "0°" badges toggled with the "b" key
   EventCountdown.vue      # countdown tiles (days, hours, minutes, seconds)
   EventPage.vue           # public event page: calls useCountdown and lays out the sections
+  FallingParticles.vue    # falling snow or confetti (fixed positions, no Math.random, so hydration matches)
   JourneyRoad.vue         # road, destination image, bus lane and rendez-vous date
   MainTitle.vue           # big display title of the public pages
   PublicBackdrop.vue      # full-screen background image under a sky-blue veil (home and event pages)
-  TransportVehicle.vue    # bus and rotating speech bubble whose tail points at the bus; the name shows when hovering the avatar
+  SummerDecor.vue         # summer theme: turning sun and butterflies
+  TransportVehicle.vue    # bus and rotating speech bubble whose tail points at the bus; hovering holds the bubble and shows the name, clicking the bus honks, exhaust puffs
+  WinterDecor.vue         # winter theme: light garland and snowfall
 composables/
   useAppToast.ts          # toast composable: toast.success(msg) / toast.error(msg)
   useCountdown.ts         # Vue composable wrapping countdown math

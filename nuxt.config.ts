@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   devServer: { port: 4567 },
 
-  css: ['~/assets/css/theme.css', '~/assets/css/admin.css', '~/assets/css/public.css'],
+  css: ['~/assets/css/theme.css', '~/assets/css/admin.css', '~/assets/css/public.css', '~/assets/css/event-themes.css'],
 
   routeRules: {
     // Listing events costs a Blob "advanced operation" (2,000/month on Hobby):

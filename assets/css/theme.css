@@ -56,6 +56,14 @@
   --public-sun:          #ffd23f;
   --public-grass:        #7ee08a;
   --public-road:         #3a3a3a;
+  --public-berry:        #ff5d8f;
+  --public-ocean:        #3a86ff;
+  --public-holly:        #e63946;
+  --public-orange:       #ff9f1c;
+  --public-snow:         #ffffff;
+  /* Sky of the seasonal themes (see event-themes.css) */
+  --public-sky-winter:   #d3dfec;
+  --public-sky-summer:   #ffe9c2;
   --public-veil-opacity: 0.55;
   --public-border:       2px solid var(--public-ink);
   --public-border-thick: 3px solid var(--public-ink);

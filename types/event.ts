@@ -16,6 +16,9 @@ export type EventVisuals = {
   goal: string;
 };
 
+/** Seasonal decoration of an event page. No theme: the plain page. */
+export type EventTheme = 'summer' | 'winter';
+
 /** A marmelab trip event. Named TripEvent to avoid collision with the DOM Event type. */
 export type TripEvent = {
   slug: string;
@@ -28,6 +31,7 @@ export type TripEvent = {
   visuals: EventVisuals;
   /** Ordered list of participant IDs for this event */
   participants: string[];
+  theme?: EventTheme;
   /** Link-preview image (1200×630), regenerated on every save. Missing on events not saved since. */
   ogImage?: string;
 };

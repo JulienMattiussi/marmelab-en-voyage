@@ -30,7 +30,8 @@ const rendezVous = computed(() => formatRendezVous(deadline));
 <style scoped>
 .road-area {
   position: relative;
-  padding-top: 190px;
+  /* Room for the speech bubble (avatar shown down to the waist) above the bus. */
+  padding-top: 240px;
 }
 
 /* The stretch the bus travels: its bottom is the road surface. */
@@ -44,6 +45,8 @@ const rendezVous = computed(() => formatRendezVous(deadline));
 
 .goal {
   position: absolute;
+  /* In front of what a theme lays along the road (snowbank, flowers). */
+  z-index: 1;
   right: -16px;
   bottom: 30px;
   width: 140px;
