@@ -126,12 +126,13 @@ onUnmounted(() => clearTimeout(timer));
   opacity: 1;
 }
 
-/* Full-body cartoon avatars: show them down to the waist. */
+/*
+  Full-body cartoon avatars: show them down to the waist. Full width, since the PNGs have a
+  transparent background and hair or accessories can reach the sides.
+*/
 .avatar-frame {
   flex: none;
   display: flex;
-  justify-content: center;
-  width: 56px;
   height: 82px;
   overflow: hidden;
 }
@@ -184,7 +185,6 @@ onUnmounted(() => clearTimeout(timer));
   }
 
   .avatar-frame {
-    width: 50px;
     height: 72px;
   }
 
