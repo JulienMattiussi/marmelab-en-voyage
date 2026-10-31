@@ -122,6 +122,7 @@ server/
   utils/storage/          # storage drivers: local (filesystem) and vercel-blob
 scripts/
   seed-blob.mjs           # seed the private Blob store from local content/
+  pull-blob.mjs           # copy the production data from the private Blob store into local content/
 tests/
   unit/                   # Vitest unit tests
   e2e/                    # Playwright E2E tests

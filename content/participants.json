@@ -1,7 +1,7 @@
 [
   {
     "id": "adrieng",
-    "name": "Adrien G.",
+    "name": "Adrien",
     "avatar": "/avatars/adrieng.png",
     "quote": "Metz ça aurait été mieux.",
     "active": true
@@ -53,7 +53,7 @@
     "name": "Cindy",
     "avatar": "/avatars/cindy.png",
     "quote": "Je vais tous les doubler",
-    "active": true
+    "active": false
   },
   {
     "id": "erwan",
@@ -102,20 +102,21 @@
     "name": "Jibe",
     "avatar": "/avatars/jibe.png",
     "quote": "On va où ?",
-    "active": true
+    "active": true,
+    "avatarSource": "https://www.sp-studio.de/#H4sIAAAAAAAAA62W3W7aMBTHX8XyLkalVHM-HbhLCKjd1KvtalWFTGJIVhMjO2nXVrxNn2FXu-PFZoePOUS0tBsRHzmJD_zO_-9zuH6CktVzOIDytpioJ0I2tCBfVgUvJRxcwwW_oyoieEXUG6PNWcqZDW_UKZlSBgdPkJYqxdeKlBkRGZjy7EHdlVEjeLv-JZZUwJUFHy_LjP6EAxfpDA9UXGZwYFtwKfhS6mwqPRe7T7a6CD-Mx1ES4u1Xl5tIguJ4G5E6Murj0HM2EadZ5fj62EaaVah5bCPNKm-sj20etsk8wkkMV6uVtS_PlJKJrGqEXGgAOCeWyoIyJ1m3YjHV5erNijsK-MeU8fQW6Dv5_dmufjERlUxzUlW0BL2ruszATNDiTBdyXzwHvVy9KAhtLzKrNwz6Qz8xqUcoDjA264mxH7t2uw6MzidLUiIUvNsmnylRa7Z4mxPDFJ5vcvkvczkjd4T7Jpfn-mEUmlz-GAcJMrns0HGV4h0umfN_sb_c2V_lofLQ_0rDOqct0sAkDY6Smr5t_WaZFxPGS9Q4_OhvnrFi2bGjdv8LGzgTVErFUYgKfAJTxmtJD4HOL-giU1djpi8aXL65rR33Na4Qj8emOmqLBUFg7tloqA9TU8-Ngv2qbLMqiIb9gz3Ls0muvfofNFV5so6m-fpZIZvsuNXSXutpOB6FwUFPc9vuVb0oGCZmfZJRv-_jNumMpJMFr5HzftIrXlc56MlFwYpyboGK0irfd6Gm7_S-r5_zklqArZ_TnLIyO2uxY4P9FTuPm4eCsGAlVAdgpKL6BpVGVfBBvR7i0Qf6BiGPOXyvp0rXkZPUc3WTSdQ3iPBJRN1R0xIqJ0XTZnzHGCNhePL2bcbI0fmbc7Vf1VcI4Hs7uC-1eKTgghBBddScGvZxkboToTs1upPl6NTQAk4FR7b7bn9-y4tSq6bS3EuAd3jJ-ndZUhBp6aaC1GpIYlNCG3kGcfj2JsunPyaLWiI7NBSzsX-iZB2ORNQLIGkFUl5WgjOm_hPtfJjmjMwfaT0_H_69aCrmGiZcrW7-AFKDImO-CQAA"
   },
   {
     "id": "jonathan",
     "name": "Jonathan",
     "avatar": "/avatars/jonathan.png",
     "quote": "Youpi",
-    "active": true
+    "active": false
   },
   {
     "id": "julio",
     "name": "Julio",
     "avatar": "/avatars/julio.jpg",
-    "quote": "Quelqu'un a de quoi manger ?",
+    "quote": "Quelqu'un veut des bonbons ?",
     "active": true
   },
   {
@@ -151,6 +152,20 @@
     "name": "Jérome",
     "avatar": "/avatars/jerome.jpg",
     "quote": "J'ai pris ma switch",
+    "active": true
+  },
+  {
+    "id": "sohanne",
+    "name": "Sohanne",
+    "avatar": "https://sqpidv68habblc2a.public.blob.vercel-storage.com/avatars/sohanne.jpg",
+    "quote": "Souriez tous, c'est pour Tik-Tok",
+    "active": true
+  },
+  {
+    "id": "maxime",
+    "name": "Maxime",
+    "avatar": "https://sqpidv68habblc2a.public.blob.vercel-storage.com/avatars/maxime.jpg",
+    "quote": "Mais ou je suis tombé moi !!",
     "active": true
   }
 ]
