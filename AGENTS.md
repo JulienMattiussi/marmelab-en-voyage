@@ -42,8 +42,8 @@ TransportParticipant = { id, name, avatar, quote }  // derived at render time, n
 Key naming rules:
 - `TripEvent` (not `Event`) — avoids collision with the DOM `Event` type
 - `TransportParticipant` (not `BusParticipant`) — generic transport naming
-- Component `TransportVehicle` (not `BusImage`), `BeerProgress` (not `BeerImage`), `EventCountdown` (not `CountDown`)
-- Dates: `start` only drives the bus and the beers (shown in the admin as "Début du compte à rebours", never on the page); `deadline` is the trip date, shown as "RDV jeudi 26 novembre, 9 h" by `formatRendezVous` (`utils/date.ts`).
+- Component `TransportVehicle` (not `BusImage`), `DrinkProgress` (not `BeerProgress`: the row mixes several drinks), `EventCountdown` (not `CountDown`)
+- Dates: `start` only drives the bus and the glasses (shown in the admin as "Début du compte à rebours", never on the page); `deadline` is the trip date, shown as "RDV jeudi 26 novembre, 9 h" by `formatRendezVous` (`utils/date.ts`).
 
 ## Business rules
 
@@ -53,6 +53,7 @@ Key naming rules:
 - **Default visuals**: if an event has no background image set, `public/assets/back.png` is used; if no goal image, `public/assets/goal.png` is used.
 - **Link previews**: every event save (create, update, visual upload) draws a 1200×630 preview card (title, RDV pill, road and bus) and stores it as `events/<slug>/og.png` next to the visuals; its URL goes in `TripEvent.ogImage` (with a `?v=` timestamp so platforms refetch it). Platforms get a static file, nothing is drawn when they call. Events not saved since fall back to the destination image. A drawing failure never blocks the save. The home page card is a static file, `public/assets/og-home.jpg`.
 - **Themes**: an event can have a seasonal theme (summer or winter, chosen in the editor; labels in `EVENT_THEME_LABELS`). `EventPage` sets `data-theme`: `assets/css/event-themes.css` recolors the page and adds the snow caps or the flower edge, `WinterDecor` / `SummerDecor` add the moving decorations. The editor sends `theme: ''` for "no theme", and `withTheme` (`server/utils/events.ts`) keeps only known themes.
+- **Server and browser clocks**: the server may render another progress than the browser (clock, time zone of the dates without zone), and Vue does not fix classes and styles at hydration. `EventPage` redraws `DrinkProgress` and `JourneyRoad` once the browser clock runs (`live` from `useCountdown`).
 - **Arrival day**: from the rendez-vous time until midnight that day (visitor's local time), the countdown tiles give way to an "On y est !" banner with confetti (`isArrivalDay` in `utils/countdownMath.ts`). Computed in the browser only, to avoid a hydration mismatch. The following days show the countdown at zero again.
 - **Saving events**: API routes save events with `writeEventWithPreview` (`server/utils/eventPreview.ts`), never `writeEvent` directly, so the link preview stays in sync.
 - **Legacy data normalization**: `server/utils/events.ts` normalizes participants that were stored as `{ id, quote }` objects (old format) into plain string IDs on read.
@@ -92,7 +93,9 @@ assets/css/event-themes.css  # seasonal themes of the event page (colors, snow c
 components/
   AppToast.vue            # global toast notifications (bottom-center, auto-dismiss)
   ArrivalBanner.vue       # "On y est !" banner and confetti, in place of the countdown on the arrival day
-  BeerProgress.vue        # 9 mugs filling up with time, "0°" badges toggled with the "b" key
+  DrinkBottle.vue         # bottle of a drink, coming to pour into the glass being filled (in a loop)
+  DrinkGlass.vue          # one glass drawn in SVG (beer, cocktail, cola, syrup, wine, champagne), filled to a level, garnished and dripping when full
+  DrinkProgress.vue       # row of 9 glasses filling up with time (DRINK_PANEL in utils/drinks.ts)
   EventCountdown.vue      # countdown tiles (days, hours, minutes, seconds)
   EventPage.vue           # public event page: calls useCountdown and lays out the sections
   FallingParticles.vue    # falling snow or confetti (fixed positions, no Math.random, so hydration matches)
@@ -136,7 +139,8 @@ tests/
   e2e/                    # Playwright E2E tests
 utils/
   constants.ts            # EVENT_LIMIT = 5, SITE_NAME, OG_IMAGE_WIDTH / OG_IMAGE_HEIGHT
-  countdownMath.ts        # pure math: computeProgress, splitDuration, beerCount, padTime
+  countdownMath.ts        # pure math: computeProgress, splitDuration, drinkCount, isArrivalDay, padTime
+  drinks.ts               # glasses of the progress row (DRINK_PANEL) and how full each one is (glassLevel)
   date.ts                 # formatRendezVous(deadline): "jeudi 26 novembre, 9 h", same result on server and browser
   error.ts                # extractErrorMessage(e, fallback) — shared error extraction for $fetch catch blocks
   slugify.ts              # shared slug/ID generation

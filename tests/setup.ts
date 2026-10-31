@@ -9,6 +9,7 @@ import {
   onUnmounted,
   onBeforeUnmount,
   nextTick,
+  useId,
 } from 'vue';
 
 // Expose Vue composables as globals to mirror Nuxt's auto-import behaviour.
@@ -21,6 +22,7 @@ vi.stubGlobal('onMounted', onMounted);
 vi.stubGlobal('onUnmounted', onUnmounted);
 vi.stubGlobal('onBeforeUnmount', onBeforeUnmount);
 vi.stubGlobal('nextTick', nextTick);
+vi.stubGlobal('useId', useId);
 
 // Mock Nuxt-specific globals.
 vi.stubGlobal('useState', (_key: string, init: () => unknown) => ref(init()));

@@ -20,11 +20,9 @@ test.describe('Event page', () => {
     expect(text).toMatch(/seconde/);
   });
 
-  test('displays beer progress icons', async ({ page }) => {
+  test('displays the row of glasses', async ({ page }) => {
     await page.goto('/belmont-2025');
-    // There should be 9 beer images
-    const beerImages = page.locator('.beer-row img');
-    await expect(beerImages).toHaveCount(9);
+    await expect(page.locator('.drink-row svg')).toHaveCount(9);
   });
 
   test('displays the rendez-vous date', async ({ page }) => {

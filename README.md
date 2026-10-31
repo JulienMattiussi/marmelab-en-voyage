@@ -1,9 +1,9 @@
 # Marmelab en Voyage
 
-A Nuxt 4 web application for Marmelab team trips. Each trip gets a public page with a countdown to the rendez-vous, a beer-progress bar, and an animated transport vehicle showing participant speech bubbles. An admin CMS at `/admin` lets the team manage events and participants.
+A Nuxt 4 web application for Marmelab team trips. Each trip gets a public page with a countdown to the rendez-vous, a row of glasses filling up, and an animated transport vehicle showing participant speech bubbles. An admin CMS at `/admin` lets the team manage events and participants.
 
 - Home page at `/`: the published events
-- Public event pages at `/<slug>`: countdown, beer-progress bar, transport vehicle with participant speech bubbles
+- Public event pages at `/<slug>`: countdown, row of glasses filling up, transport vehicle with participant speech bubbles
 - Link previews: saving an event in the admin draws its 1200×630 preview image (title, rendez-vous date, road and bus), shown when the link is shared
 - Admin at `/admin` — protected by GitHub OAuth
 

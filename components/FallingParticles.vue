@@ -5,10 +5,11 @@ const { kind, count = 50 } = defineProps<{
   count?: number;
 }>();
 
-// Same values on the server and in the browser (no Math.random), so hydration matches.
+// Same values on the server and in the browser (no Math.random), so hydration matches. Rounded:
+// Math.sin may differ in the last digits between Node and the browser.
 const pseudoRandom = (index: number, salt: number) => {
   const x = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453;
-  return x - Math.floor(x);
+  return Math.round((x - Math.floor(x)) * 1000) / 1000;
 };
 
 const particles = computed(() =>

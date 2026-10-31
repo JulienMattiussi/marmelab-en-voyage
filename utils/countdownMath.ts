@@ -1,4 +1,4 @@
-export const BEER_COUNT = 9;
+export const DRINK_COUNT = 9;
 
 /**
  * Returns how far through the event we are, as a 0–100 percentage.
@@ -37,9 +37,9 @@ export const splitDuration = (ms: number): TimeComponents => {
   };
 };
 
-/** How many beers have been "consumed" based on progress (0–BEER_COUNT). */
-export const beerCount = (progress: number): number =>
-  Math.floor((progress / 100) * BEER_COUNT);
+/** How many glasses are full, based on progress (0–DRINK_COUNT). */
+export const drinkCount = (progress: number): number =>
+  Math.floor((progress / 100) * DRINK_COUNT);
 
 /**
  * True on the day of the trip, from the rendez-vous time until midnight (local time):

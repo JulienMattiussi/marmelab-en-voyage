@@ -1,7 +1,7 @@
 import {
   computeProgress,
   splitDuration,
-  beerCount,
+  drinkCount,
   isArrivalDay,
   type TimeComponents,
 } from '~/utils/countdownMath';
@@ -11,10 +11,15 @@ type CountdownState = {
   time: ComputedRef<TimeComponents>;
   /** Journey progress 0–100. */
   progress: ComputedRef<number>;
-  /** Beers consumed so far (0–BEER_COUNT). */
-  beers: ComputedRef<number>;
+  /** Glasses full so far (0–DRINK_COUNT). */
+  drinks: ComputedRef<number>;
   /** Rendez-vous time passed, same day: the page celebrates. */
   arrived: ComputedRef<boolean>;
+  /**
+   * False until the browser has its own clock. The server's clock and time zone may differ, and Vue
+   * doesn't fix classes and styles that differ at hydration: key what depends on progress on it.
+   */
+  live: Ref<boolean>;
 };
 
 export const useCountdown = (start: string, deadline: string): CountdownState => {
@@ -26,10 +31,9 @@ export const useCountdown = (start: string, deadline: string): CountdownState =>
   const remaining = computed(() => deadlineMs - now.value);
   const progress = computed(() => computeProgress(startMs, deadlineMs, now.value));
   const time = computed(() => splitDuration(Math.max(0, remaining.value)));
-  const beers = computed(() => beerCount(progress.value));
-  // Browser only: the server's clock and time zone may differ, and the page would flicker on hydration.
-  const mounted = ref(false);
-  const arrived = computed(() => mounted.value && isArrivalDay(deadlineMs, now.value));
+  const drinks = computed(() => drinkCount(progress.value));
+  const live = ref(false);
+  const arrived = computed(() => live.value && isArrivalDay(deadlineMs, now.value));
 
   let timer: ReturnType<typeof setTimeout>;
 
@@ -40,10 +44,10 @@ export const useCountdown = (start: string, deadline: string): CountdownState =>
   };
 
   onMounted(() => {
-    mounted.value = true;
+    live.value = true;
     tick();
   });
   onUnmounted(() => clearTimeout(timer));
 
-  return { time, progress, beers, arrived };
+  return { time, progress, drinks, arrived, live };
 };

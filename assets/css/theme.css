@@ -61,6 +61,16 @@
   --public-holly:        #e63946;
   --public-orange:       #ff9f1c;
   --public-snow:         #ffffff;
+  /* Drinks of the progress row */
+  --drink-beer:          #ffb627;
+  --drink-cocktail:      #38b6ff;
+  --drink-cola:          #5a2e14;
+  --drink-syrup:         #ff4f79;
+  --drink-wine:          #8e1b3a;
+  --drink-champagne:     #f7dc6f;
+  --bottle-beer:         #8a4b14;
+  --bottle-wine:         #1f5130;
+  --bottle-metal:        #cfd8e0;
   /* Sky of the seasonal themes (see event-themes.css) */
   --public-sky-winter:   #d3dfec;
   --public-sky-summer:   #ffe9c2;

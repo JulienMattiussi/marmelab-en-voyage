@@ -6,7 +6,9 @@ const { event, globalParticipants } = defineProps<{
   globalParticipants: GlobalParticipant[];
 }>();
 
-const { time, progress, beers, arrived } = useCountdown(event.start, event.deadline);
+const { time, progress, drinks, arrived, live } = useCountdown(event.start, event.deadline);
+// Redrawn once the browser clock runs (see useCountdown): the server may have drawn another progress.
+const clockKey = computed(() => (live.value ? 'live' : 'server'));
 
 const transportParticipants = computed<TransportParticipant[]>(() =>
   event.participants
@@ -30,11 +32,12 @@ const transportParticipants = computed<TransportParticipant[]>(() =>
     <SummerDecor v-else-if="event.theme === 'summer'" />
     <header class="event-header">
       <MainTitle :message="event.title" />
-      <BeerProgress :beers="beers" />
+      <DrinkProgress :key="clockKey" :drinks="drinks" />
     </header>
     <ArrivalBanner v-if="arrived" />
     <EventCountdown v-else :time="time" />
     <JourneyRoad
+      :key="clockKey"
       class="event-journey"
       :progress="progress"
       :deadline="event.deadline"

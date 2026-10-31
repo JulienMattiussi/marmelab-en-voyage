@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest';
 import {
   computeProgress,
   splitDuration,
-  beerCount,
+  drinkCount,
   isArrivalDay,
   padTime,
-  BEER_COUNT,
+  DRINK_COUNT,
 } from '~/utils/countdownMath';
 
 describe('computeProgress', () => {
@@ -60,22 +60,22 @@ describe('splitDuration', () => {
   });
 });
 
-describe('beerCount', () => {
+describe('drinkCount', () => {
   it('returns 0 at 0% progress', () => {
-    expect(beerCount(0)).toBe(0);
+    expect(drinkCount(0)).toBe(0);
   });
 
-  it('returns BEER_COUNT at 100% progress', () => {
-    expect(beerCount(100)).toBe(BEER_COUNT);
+  it('returns DRINK_COUNT at 100% progress', () => {
+    expect(drinkCount(100)).toBe(DRINK_COUNT);
   });
 
   it('floors the result', () => {
     // 50% of 9 = 4.5, floored to 4
-    expect(beerCount(50)).toBe(4);
+    expect(drinkCount(50)).toBe(4);
   });
 
-  it('never exceeds BEER_COUNT', () => {
-    expect(beerCount(100)).toBeLessThanOrEqual(BEER_COUNT);
+  it('never exceeds DRINK_COUNT', () => {
+    expect(drinkCount(100)).toBeLessThanOrEqual(DRINK_COUNT);
   });
 });
 
