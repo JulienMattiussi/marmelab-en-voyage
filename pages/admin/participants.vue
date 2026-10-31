@@ -14,7 +14,7 @@ const activeList = computed(() => (participants.value ?? []).filter((p) => p.act
 const inactiveList = computed(() => (participants.value ?? []).filter((p) => !p.active));
 
 // Per-card editable state
-type CardState = { name: string; quote: string; saving: boolean; saved: boolean };
+type CardState = { name: string; quote: string; avatarSource: string; saving: boolean; saved: boolean };
 const cardState = reactive<Record<string, CardState>>({});
 
 watch(
@@ -23,10 +23,11 @@ watch(
     if (!list) return;
     for (const p of list) {
       if (!cardState[p.id]) {
-        cardState[p.id] = { name: p.name, quote: p.quote, saving: false, saved: false };
+        cardState[p.id] = { name: p.name, quote: p.quote, avatarSource: p.avatarSource ?? '', saving: false, saved: false };
       } else {
         cardState[p.id]!.name = p.name;
         cardState[p.id]!.quote = p.quote;
+        cardState[p.id]!.avatarSource = p.avatarSource ?? '';
       }
     }
   },
@@ -41,7 +42,7 @@ const saveCard = async (id: string) => {
   try {
     const updated = await $fetch<GlobalParticipant>(`/api/participants/${id}`, {
       method: 'PUT',
-      body: { name: state.name, quote: state.quote },
+      body: { name: state.name, quote: state.quote, avatarSource: state.avatarSource },
     });
     updateParticipant(id, updated);
     toast.success(`Participant sauvegardé : ${updated.name}`);
@@ -160,6 +161,22 @@ const submitAdd = async () => {
           <div class="card-body">
             <input v-model="cardState[p.id]!.name" type="text" class="input-name" >
             <input v-model="cardState[p.id]!.quote" type="text" class="input-quote" placeholder="Citation…" >
+            <div class="source-row">
+              <input
+                v-model="cardState[p.id]!.avatarSource"
+                type="url"
+                class="input-source"
+                placeholder="Lien source de l'avatar (sp-studio)…"
+              >
+              <a
+                v-if="p.avatarSource"
+                :href="p.avatarSource"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="source-link"
+                title="Ouvrir la source de l'avatar dans un nouvel onglet"
+              >↗</a>
+            </div>
             <div class="card-actions">
               <button class="btn-disable" @click="toggleActive(p.id, false)">Désactiver</button>
               <button class="btn-save" :disabled="cardState[p.id]!.saving" @click="saveCard(p.id)">
@@ -307,8 +324,34 @@ const submitAdd = async () => {
   box-sizing: border-box;
 }
 
+.source-row { display: flex; gap: 6px; align-items: center; }
+
+.input-source {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  color: var(--color-text-muted);
+}
+
+.source-link {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.source-link:hover { background: var(--color-border); }
+
 .input-name:focus,
-.input-quote:focus { outline: none; border-color: var(--color-primary); }
+.input-quote:focus,
+.input-source:focus { outline: none; border-color: var(--color-primary); }
 
 .inactive-name { font-weight: bold; font-size: 0.95rem; color: var(--color-text); }
 .inactive-quote { font-size: var(--font-size-sm); color: var(--color-text-muted); font-style: italic; }

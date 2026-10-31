@@ -33,7 +33,7 @@ The layout above is the `local` storage driver (default, used in dev and tests).
 ## Core types (`types/event.ts`)
 
 ```ts
-GlobalParticipant = { id, name, avatar, quote, active }
+GlobalParticipant = { id, name, avatar, quote, active, avatarSource? }
 TripEvent = { slug, name, published, title, start, deadline, visuals: { background, goal }, participants: string[], ogImage? }
 TransportParticipant = { id, avatar, quote }  // derived at render time, never stored
 ```
@@ -66,6 +66,7 @@ Admin routes (`/admin/*`) are protected by GitHub OAuth via `nuxt-auth-utils`:
 
 **API protection** (`server/middleware/auth.ts`):
 - `GET /api/events/[slug]` and `GET /api/participants` are **public** — used by the event display page.
+- `GET /api/participants` leaves out `avatarSource` (link to the avatar's sp-studio source) for visitors who are not logged in: only the admin editor uses it.
 - `GET /api/published-events` is **public**: published events only, used by the home page (cached by Vercel for 1 hour, see `routeRules` in `nuxt.config.ts`).
 - `GET /api/events` (list) and all POST/PUT/DELETE routes are **protected** — admin only.
 - Uses `requireUserSession` (not `getUserSession`) to throw a proper 401.

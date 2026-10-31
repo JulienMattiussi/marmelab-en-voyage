@@ -5,6 +5,8 @@ export type GlobalParticipant = {
   avatar: string;
   quote: string;
   active: boolean;
+  /** Link to the avatar's editable source (e.g. an sp-studio.de URL) */
+  avatarSource?: string;
 };
 
 export type EventVisuals = {
