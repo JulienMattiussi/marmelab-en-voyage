@@ -35,7 +35,7 @@ describe('DrinkProgress', () => {
 });
 
 describe('glassLevel', () => {
-  it('fills the glasses already reached, pours the next two, leaves the others empty', () => {
-    expect([1, 2, 3, 4, 5, 6].map((slot) => glassLevel(slot, 2))).toEqual([1, 1, 0.75, 0.25, 0, 0]);
+  it('fills the glasses already reached, pours the next one, leaves the others empty', () => {
+    expect([1, 2, 3, 4, 5].map((slot) => glassLevel(slot, 2))).toEqual([1, 1, 0.75, 0, 0]);
   });
 });
